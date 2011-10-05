@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+	<title>Medical Marijuana Healthcare &#124; Tracking Healthcare
+	Cannabis <%= title %></title>
+	<meta name="Description" content="BioTrack THC offers a medical marijuana turn-key system to meet state regulations with easy to use grow-house location tracking technology, &amp; with user-friendly point of sale software for ones business to succeed." />
+	<meta name="Keywords" content="BioTrackTHC, medical marijuana, healthcare cannabis, marijuana seed to sale, turn-key system, digital grow, plant reminder system, plant notes, genealogy tracking, plant yield,  Florida" />
+	
+<!--<meta name="google-site-verification" content="xxNyOIOS36rbOniWlHk2Z-Ver1XZFog1_IRO97_qsT8" />-->
+<meta name="google-site-verification" content="D1qfRKZ1egyPmxFSebd7AroGvpYdrVJIQZbzZYldpnI" />
+<META name="y_key" content="f5a736f4ce0b3221" />
+<meta name="msvalidate.01" content="ADF4E68AE9D603BFBD35E119BB51F5A2" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="/exp/btc/styles.css" rel="stylesheet" type="text/css" />
+<link href="/exp/btc/menu.css" rel="stylesheet" type="text/css" />
+<script src="/exp/btc/Functions.js" type="text/javascript"></script>
+<script src="/exp/btc/flowplayer-3.2.4.min.js" type="text/javascript"></script>
+<!--[if lte IE 6]>
+<style>
+body { behavior:url("includes/csshover.htc"); }
+</style>
+<![endif]-->
+<script type="text/javascript">
+/*<![CDATA[*/
+var PLSM_VERSION="2.6.0.0";
+var PLSM_TITLE_URL=1;
+var PLSM_COL_COUNT=1;
+var PLSM_LEFT_RIGHT=1;
+var PLSM_LANGUAGE_RTL=0;
+var PLSM_ICON_USE=1;
+var PLSM_IMG_USE=1;
+var PLSM_USE_INDENT=1;
+var PLSM_TREE_INDENT=19;
+var PLSM_ML_ICON="/images/folder.gif";
+var PLSM_ML_ICON_WIDTH=16;
+var PLSM_ML_ICON_HEIGHT=16;
+var PLSM_ML_ICON_MO="/images/folder.gif";
+var PLSM_ML_ICON_MO_WIDTH=16;
+var PLSM_ML_ICON_MO_HEIGHT=16;
+var PLSM_SL_ICON="/images/file.gif";
+var PLSM_SL_ICON_WIDTH=16;
+var PLSM_SL_ICON_HEIGHT=16;
+var PLSM_SL_ICON_MO="/images/file.gif";
+var PLSM_SL_ICON_MO_WIDTH=16;
+var PLSM_SL_ICON_MO_HEIGHT=16;
+var PLSM_IMG_I="/images/i.gif";
+var PLSM_IMG_I_WIDTH=19;
+var PLSM_IMG_I_HEIGHT=20;
+var PLSM_IMG_L="/images/l.gif";
+var PLSM_IMG_L_WIDTH=19;
+var PLSM_IMG_L_HEIGHT=20;
+var PLSM_IMG_T="/images/t.gif";
+var PLSM_IMG_T_WIDTH=19;
+var PLSM_IMG_T_HEIGHT=20;
+var PLSM_TRANSFORM_PATHS=1;
+var PLSM_HOST="http://www.biotrackthc.info";
+var PLSM_GOOGLE=1;
+var PLSM_GOOGLE_PATH="/sitemap.xml";
+var PLSM_YAHOO=1;
+var PLSM_YAHOO_PATH="/urllist.txt";
+var PLSM_ROBOTS=1;
+var PLSM_ROBOTS_PATH="/robots.txt";
+var PLSM_ROR=1;
+var PLSM_ROR_PATH="/ror.xml";
+var PLSM_STREAM=new Array(0,"Home","/index.asp",1,"http://","0.5","monthly",0,0,"About Us","/about.asp",1,"http://","0.5","monthly",0,0,"Affiliates","/affiliates.asp",1,"http://","0.5","monthly",0,0,"Compare Us","/compare-us.asp",1,"http://","0.5","monthly",0,0,"Contact Us","/contact.asp",1,"http://","0.5","monthly",0,0,"Demos","/demos.asp",1,"http://","0.5","monthly",0,0,"How It Works","/how-it-works.asp",1,"http://","0.5","monthly",0,0,"News","/news.asp",1,"http://","0.5","monthly",0,0,"Patient Privacy","/patient-privacy.asp",1,"http://","0.5","monthly",0,0,"Photos","/photos.asp",1,"http://","0.5","monthly",0,0,"Products","/products.asp",1,"http://","0.5","monthly",0);
+function PLSM_MouseOver(){var bMain = ((this.className.indexOf("_Main")>0)?true:false);if (PLSM_ICON_USE == 1) {var p = this.parentNode;if (p) {var imgs = p.getElementsByTagName("img");if (imgs) {var img=imgs[imgs.length - 1];if (bMain) {if (img && PLSM_ML_ICON_MO) img.src=PLSM_ML_ICON_MO;}else {if (img && PLSM_SL_ICON_MO) img.src=PLSM_SL_ICON_MO;}}}}if (bMain)	this.className += " PLSM_MainNodeMO";else this.className += " PLSM_SubNodeMO";}
+function PLSM_MouseOut(){var bMain = ((this.className.indexOf("_Main")>0)?true:false);if (PLSM_ICON_USE == 1) {var p = this.parentNode;if (p) {var imgs = p.getElementsByTagName("img");if (imgs) {var img=imgs[imgs.length - 1];if (bMain) {if (img && PLSM_ML_ICON_MO) img.src=PLSM_ML_ICON;}else {if (img && PLSM_SL_ICON_MO) img.src=PLSM_SL_ICON;}}}}if (bMain)	this.className = "PLSM_MainNode";else this.className = "PLSM_SubNode";}
+function PLSM_MouseDown(){if (this.className.indexOf("_Main")>0) {this.className += " PLSM_MainNodeMD";}else {this.className += " PLSM_SubNodeMD";}}
+function PLSM_MouseUp(){if (this.className.indexOf("_Main")>0) {this.className="PLSM_MainNode PLSM_MainNodeMO";}else {this.className="PLSM_SubNode PLSM_SubNodeMO";}}
+/*]]>*/
+</script>
+<style type="text/css">
+.PLSM_MainDiv
+{
+	position:static;
+	left:0px;
+	top:0px;
+	text-align:left;
+	white-space:nowrap;
+	float:left;
+	width:250px;
+}
+.PLSM_COL
+{
+	width:250px;
+	float:left;
+}
+.PLSM_MainNode
+{
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size:11px;
+	color:#000000;
+	font-weight:bold;
+	text-decoration:none;
+	font-style:normal;
+	vertical-align:middle;
+}
+.PLSM_MainNodeMO
+{
+	color:#000000;
+	font-weight:bold;
+	text-decoration:none;
+	font-style:normal;
+	background-color:#9DBCE1;
+}
+.PLSM_MainNodeMD
+{
+	color:#0000ff;
+	font-weight:bold;
+	text-decoration:none;
+	font-style:normal;
+}
+.PLSM_SubNode
+{
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size:9px;
+	color:#008000;
+	font-weight:normal;
+	text-decoration:none;
+	font-style:normal;
+	vertical-align:middle;
+}
+.PLSM_SubNodeMO
+{
+	color:#008000;
+	font-weight:normal;
+	text-decoration:none;
+	font-style:normal;
+	background-color:#9DBCE1;
+}
+.PLSM_SubNodeMD
+{
+	color:#0000ff;
+	font-weight:normal;
+	text-decoration:none;
+	font-style:normal;
+}
+.PLSM_MainDiv ul
+{
+	margin-top:10px;
+	margin-right:0px;
+	margin-bottom:0px;
+	margin-left:0px;
+	padding:0px;
+	width:249px;
+	float:left;
+}
+.PLSM_MainDiv li
+{
+	list-style:none;
+	white-space:nowrap;
+	margin:0px;
+	padding-top:0px;
+	padding-right:0px;
+	padding-bottom:0px;
+	padding-left:0px;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size:1px;
+	width:249px;
+	float:left;
+}
+.PLSM_MainDiv li img
+{
+	vertical-align:middle;
+}
+.PLSM_S
+{
+	font-size:1px;
+	padding:0px;
+	padding-left:19px;
+}
+</style>
+</head>
+<body>
+<center>
+
+<div class="header">
+	<script type="text/javascript">
+		AC_FL_RunContent('wmode','transparent','width','419','height','176','title','BioTrackTHC Logo','src','fla/logo','quality','high','movie','fla/logo' ); //end AC code
+    </script>
+    <noscript>
+        <object type="application/x-shockwave-flash" data="http://biotrackthc.com/fla/logo.swf" width="419" height="176" title="BioTrackTHC Logo">
+            <param name="movie" value="http://biotrackthc.com/fla/logo.swf" />
+            <param name="wmode" value="transparent" />
+		</object>
+    </noscript>
+	<h1 style="float:right; padding:123px 35px 0 0; text-align:right; color:#060; font-size:24px;">"Protecting Patient Privacy!"</h1>
+</div>
+	<div id="menu">
+		<ul>
+			<li><a href="index.asp">Home</a></li>
+			<li><a href="/store">Store</a></li>
+			<li><a href="about.asp">About Us</a></li>
+			<li><a href="patient-privacy.asp">Patient Privacy</a></li>
+			<li><a href="news.asp">News</a>
+				<ul>
+					<li><a href="compliance2.asp">Arizona Compliance</a></li>
+					<li><a href="compliance.asp">Colorado Compliance</a></li>
+				</ul>
+			</li>
+			<li><a href="how-it-works.asp">How It Works</a>
+				<ul>
+					<li><a href="compare-us.asp">Compare Us</a></li>
+					<li><a href="affiliates.asp">Affiliates/Supporters</a></li>
+					<!--li><a href="testimonials.asp">Testimonials</a></li-->
+				</ul>
+			</li>
+			<li><a href="products.asp">Equipment</a></li>
+zz
+</div>
+</center>
+</body>
+</html>

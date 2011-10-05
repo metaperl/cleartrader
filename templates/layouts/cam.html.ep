@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+  <head>
+    <title><%= title %></title>
+
+    <link rel="stylesheet" type="text/css" media="all" href="css/reset.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="css/text.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="css/960.css" />
+    %= include 'libs' 
+  </head>
+
+  <body>
+
+    <div class="container_12">
+
+      <div class="grid_3">
+	<h1>
+	  <a href="/root">ElCaminoClaro.com</a>
+	</h1>
+      </div>
+
+      <div class="grid_5 align_center">
+	<h6><a href="/order">Buy</a> your slot. <a href="/terms">We double it</a>, with instant cashout.</h6>
+      </div>
+
+      <div class="grid_4 align_right">
+	
+	<h5>
+	  <a href="/faq">FAQ</a> | 
+	  <a href="http://elcaminoclaro.userrules.com/forum">Forum</a> | 
+	  <a href="/chat">Chat</a> 
+	</h5>
+
+      </div>
+
+      <hr>
+
+      <div id="content">
+	<%= content %>
+      </div>
+
+      <hr>
+
+      <h2 class="grid_12">Payment Queues</h2>
+
+      <div class="grid_2">
+	<h3>$5.00</h3>
+	<ol>
+	  <li>bob</li>
+	  <li>jane</li>
+	</ol>
+      </div>
+      <div class="grid_2">
+	<h3>$10.00</h3>
+	<ol>
+	  <li>bob</li>
+	  <li>jane</li>
+	</ol>
+      </div>
+      <div class="grid_2">
+	<h3>$25.00</h3>
+	<ol>
+	  <li>bob</li>
+	  <li>jane</li>
+	</ol>
+      </div>
+      <div class="grid_2">
+	<h3>$50.00</h3>
+	<ol>
+	  <li>bob</li>
+	  <li>jane</li>
+	</ol>
+      </div>
+      <div class="grid_2">
+	<h3>$100.00</h3>
+	<ol>
+	  <li>bob</li>
+	  <li>jane</li>
+	</ol>
+      </div>
+      <div class="grid_2">
+	<h3>$250.00</h3>
+	<ol>
+	  <li>bob</li>
+	  <li>jane</li>
+	</ol>
+      </div>
+
+      <hr>
+
+
+      <div class="grid_12">
+	<footnote>
+	  <i>You can have anything in the world that you want, simply by helping enough other people to get what they want -- Zig Ziglar.</i>
+	</footnote>
+      </div>
+
+      <hr>
+
+      <div class="grid_12">
+
+	<a href="https://github.com/metaperl/cleartrader">Source Code</a> |
+	<a href="/terms">Terms</a> |
+	<a href="/logout">Logout</a> 
+      </div>      
+
+
+
+
+    </div>
+  </body>
+</html>
+</html>

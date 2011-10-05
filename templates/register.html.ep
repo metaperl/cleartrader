@@ -1,0 +1,70 @@
+% stash title => 'Register';
+
+<form id="form" method="post" action="register_eval">
+  <fieldset>
+    <legend>Please register </legend>
+
+    <p>
+      <label for="username">username</label>&nbsp;
+      <input id="username" name="username" size="75"  class="required name"
+	     minlength="2" placeholder="" /> 
+    </p>
+
+
+    <p>
+      <label for="first_name">First Name</label>&nbsp;
+      <input id="first_name" name="first_name" size="75"  class="required name"
+	     minlength="2" placeholder="" /> 
+    </p>
+
+    <p>
+      <label for="last_name">Last Name</label>&nbsp;
+      <input id="last_name" name="last_name" size="75"  class="required name"
+	     minlength="2" placeholder="" /> 
+    </p>
+
+
+    <p>
+      <label for="email">Email Address</label>&nbsp;
+      <input id="email" name="email" size="75"  class="required email"
+	     minlength="2" placeholder="Please enter your email address for personal communication." /> 
+    </p>
+
+
+
+    <p>
+      <label for="password">Password</label>&nbsp;
+      <input id="password" name="password" size="75" type="password" class="required" minlength="4"
+	     placeholder="Please enter a password"
+	     />
+    </p>
+
+    <p>
+      <label for="password_again">Password (again)</label>&nbsp;
+      <input id="password_again" name="password_again" size="75"  type="password" class="required" minlength="4"
+	     placeholder="Please enter password again for verification"
+	     />
+    </p>
+
+    <p>
+      <label> </label>&nbsp;
+      <input id="register" class="submit" type="submit" value="Register"/>
+    </p>
+
+
+  </fieldset>
+</form>
+
+<div>
+
+<p>
+  You must have an active <a href="http://www.PayPal.com">PayPal</a> account to use this program.
+If you need to, visit PayPal to get a free one.
+</p>
+
+<p>
+You are agreeing to our Terms and Conditions by pressing the Join Button
+</p>
+</div>
+
+<%= include 'validation' %>

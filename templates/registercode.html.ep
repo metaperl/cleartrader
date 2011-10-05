@@ -1,0 +1,23 @@
+% stash title => 'Sponsor New Compassion Flower';
+
+
+<form id="form" method="get" action="/linkwith">
+  <fieldset>
+    <legend>Please enter the email address of your sponsor</legend>
+
+    <p>
+      <label for="email">Your Sponsor's Email </label>&nbsp;
+      <input id="email" name="email" size="45"  class="required"
+	     minlength="2" placeholder="Please enter the email address of  your sponsor." /> 
+    </p>
+
+    <p>
+      <label> </label>&nbsp;
+      <input id="continue" class="submit" type="submit" value="Continue"/>
+    </p>
+
+
+  </fieldset>
+</form>
+
+<%= include 'validation' %>

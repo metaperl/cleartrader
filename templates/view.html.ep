@@ -1,0 +1,30 @@
+% layout 'cam';
+% stash title => 'Root of Compassion';
+
+<div>
+
+</div>
+
+<h1>Compassion Flowers</h1>
+
+<P>
+
+  <%= "$user->{first_name} $user->{last_name}" %> has planted the following compassion flowers:
+
+  <ul>
+
+    <% for my $s (@$sponsored) { %>
+
+    <li>
+      <a href="/view/<%= $s->{id} %>">
+	<%= "$s->{first_name} $s->{last_name}" %>
+      </a>
+    </li>
+    
+    <% } %>
+
+  </ul>
+
+<P>
+
+</P>

@@ -1,0 +1,10 @@
+% layout 'cam';
+% stash title => 'About';
+
+  <div id="docs">
+    <ul><a href="https://docs.google.com/document/pub?id=1zZLDBSEApOjZcdDMxM9J7vPdSZrfIIwC79gBRUd7NEI">Why?</a></ul>
+    <ul><a href="https://docs.google.com/document/pub?id=1GxlYjpLR6AMZdVpvC3r51x48heM5iHCYms8AzXQo5rQ">FAQ</a></ul>
+    <ul><a href="https://docs.google.com/document/pub?id=1YzXBNYUdc9aQ5OlQ2OM_jbQju5N3fhaslADuhMDyEaY">Who are we looking for?</a></ul>
+    <ul><a href="https://docs.google.com/spreadsheet/pub?hl=en_US&hl=en_US&key=0AuxxPVc-8jyBcEpRMlF3YWd1QVZCYlJOb0FkWkJQTWc&output=html">Matrix calculations</a></ul>
+  </div>
+</div>

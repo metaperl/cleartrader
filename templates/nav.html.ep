@@ -1,0 +1,11 @@
+<!-- Start PureCSSMenu.com MENU -->
+<div>
+<ul class="pureCssMenu pureCssMenum0">
+	<li class="pureCssMenui0"><a class="pureCssMenui0" href="/root">Home</a></li>
+	<li class="pureCssMenui0"><a class="pureCssMenui0" href="/add">Add</a></li>
+	<li class="pureCssMenui0"><a class="pureCssMenui0" href="/doc">About</a></li>
+	<li class="pureCssMenui0"><a class="pureCssMenui0" href="/contact">Contact Us</a></li>
+	<li class="pureCssMenui0"><a class="pureCssMenui0" href="/logout">Logout</a></li>
+</ul>
+</div>
+<br>
