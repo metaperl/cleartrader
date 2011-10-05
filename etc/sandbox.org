@@ -1,4 +1,11 @@
 * SELLER
 ** cleart@gmail.com , cleartrader
 * BUYER
-** 
+** buyer@gmail.com , buyer123  ... 
+buyer_1317784740_per@gmail.com
+* API CREDENTIALS
+Credential	API Signature
+API Username	thequietcenter_api1.gmail.com
+API Password	KSZ2KMCVEWCACN49
+Signature	ADI1IIF-7gH5jPewBwlIkmbD6heWA8q34m5i5FEDMsBuP32UhD0dxRGk
+Request Date	Oct 4, 2011 20:43:26 PDT
