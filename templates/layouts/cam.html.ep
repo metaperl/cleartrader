@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" media="all" href="css/reset.css" />
     <link rel="stylesheet" type="text/css" media="all" href="css/text.css" />
     <link rel="stylesheet" type="text/css" media="all" href="css/960.css" />
+
     %= include 'libs' 
   </head>
 
@@ -43,49 +44,26 @@
       <hr>
 
       <h2 class="grid_12">Payment Queues</h2>
+      
+      <% for my $q (@ { queues() } ) { %>
+      
 
       <div class="grid_2">
-	<h3>$5.00</h3>
+	<h3>$<%= $q->{amount} %> </h3>
+    
+         <% my $actives = active_in_queue($q->{amount}); %>
+         <% if (scalar @$actives) { %>
 	<ol>
-	  <li>bob</li>
-	  <li>jane</li>
+           <% for my $active (@$actives) { %>
+
+	  <li><%= $active->{username} %></li>
+           <% } %>
 	</ol>
+        <% } %>
+
       </div>
-      <div class="grid_2">
-	<h3>$10.00</h3>
-	<ol>
-	  <li>bob</li>
-	  <li>jane</li>
-	</ol>
-      </div>
-      <div class="grid_2">
-	<h3>$25.00</h3>
-	<ol>
-	  <li>bob</li>
-	  <li>jane</li>
-	</ol>
-      </div>
-      <div class="grid_2">
-	<h3>$50.00</h3>
-	<ol>
-	  <li>bob</li>
-	  <li>jane</li>
-	</ol>
-      </div>
-      <div class="grid_2">
-	<h3>$100.00</h3>
-	<ol>
-	  <li>bob</li>
-	  <li>jane</li>
-	</ol>
-      </div>
-      <div class="grid_2">
-	<h3>$250.00</h3>
-	<ol>
-	  <li>bob</li>
-	  <li>jane</li>
-	</ol>
-      </div>
+
+     <% } %>
 
       <hr>
 
@@ -98,10 +76,21 @@
 
       <hr>
 
-      <div class="grid_12">
+      <div class="grid_6">
+	<h3>Recent Transactions</h3>
+
+         <% my $xacts = recent_transactions %>
+	 <UL>
+         <% for my $xact (@$xacts) { %>
+	 <LI> <%= $xact->{text} %> at <%= $xact->{ts} %> </LI>
+         <% } %>
+	 </UL>
+
+      </div>
+      <div class="grid_6 align_right">
 
 	<a href="https://github.com/metaperl/cleartrader">Source Code</a> |
-	<a href="/terms">Terms</a> |
+	<a href="/terms">Terms of Service</a> |
 	<a href="/logout">Logout</a> 
       </div>      
 

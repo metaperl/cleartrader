@@ -13,16 +13,19 @@ use lib join '/', File::Spec->splitdir( dirname(__FILE__) ), 'lib';
 
 use Mojolicious::Lite;
 
+use List::Util qw(sum);
+
 use DBI;
 DBI->trace(1);
 use SQL::Interp qw/:all/;
 
 app->defaults( layout => 'cam' );
 
+use Business::PayPal::API::ExpressCheckout;
 use Local::PayPal::Config;
 
 my $errors_occurred;
-my $debug       = 4;
+my $debug = 4;
 
 my $paypal_config = Local::PayPal::Config->new;
 
@@ -37,6 +40,18 @@ $pp_signature = 'ACUJJ0QSXgMyI2hh-LYPGuJxVGFBAbFNgamI72WhQVK5grpnVaShah5x';
 
 my $sandbox = 1;
 
+my $admin_fee = 1.00;
+
+helper paypal_fees => sub {
+    my ( $self, $amount ) = @_;
+
+    my $percent      = $amount * .029;
+    my $thirty_cents = 0.30;
+    {
+        percent_amount => $percent,
+        thirty_cents   => $thirty_cents
+    };
+};
 
 helper da => sub {
     use Local::DB;
@@ -51,6 +66,70 @@ helper customer => sub {
 
     $self->da->sqlrowhash( sql_interp "SELECT * FROM users WHERE email = ",
         \$email );
+};
+
+helper 'queues' => sub {
+
+    my ($self) = @_;
+
+    my $viewed = $self->da->sqlarrayhash( "
+    SELECT
+      *
+    FROM
+      payment_queues
+    ORDER BY
+      id ASC
+    "
+    );
+
+    # returns an arrayref of hashrefs
+    warn Data::Dumper::Dumper( 'viewed', $viewed );
+
+    $viewed;
+
+};
+
+helper 'recent_transactions' => sub {
+
+    my ($self) = @_;
+
+    my $viewed = $self->da->sqlarrayhash( "
+    SELECT
+      *
+    FROM
+      transactions
+    ORDER BY
+      ts DESC
+    LIMIT 10
+    "
+    );
+
+    # returns an arrayref of hashrefs
+    #    warn Data::Dumper::Dumper( 'viewed', $viewed );
+
+    $viewed;
+
+};
+
+helper 'active_in_queue' => sub {
+
+    my ( $self, $amount ) = @_;
+
+    my $viewed = $self->da->sqlarrayhash( "
+    SELECT
+      *
+    FROM
+      slot_purchases sp INNER JOIN users ON (id=user_id)
+    WHERE 
+      position_price = $amount 
+      AND status IS NULL
+    ORDER BY
+      sp.ts ASC
+    "
+    );
+
+    $viewed;
+
 };
 
 helper 'get_user_by_id' => sub {
@@ -68,10 +147,10 @@ helper 'get_user_by_id' => sub {
 
 };
 
-helper dumper => sub {
-    my ( $self, @struct ) = @_;
-    Dumper( \@struct );
-};
+# helper dumper => sub {
+#     my ( $self, @struct ) = @_;
+#     Dumper( \@struct );
+# };
 
 plugin 'Authentication' => {
     'session_key' => 'wickedapp',
@@ -105,7 +184,6 @@ get '/' => sub {
     $self->render( template => 'index' );
 
 };
-
 
 get '/register' => sub {
     my $self = shift;
@@ -152,31 +230,27 @@ post '/register_eval' => sub {
 
     my $rows = $self->da->do( sql_interp( "INSERT INTO users", \%param ) );
 
-    $self->render(template => 'thankyou');
+    $self->render( template => 'thankyou' );
 
 };
 
-
-
 any '/return' => sub {
-    my ($self) = @_;
-    my $token = $self->param('token');
+    my ($self)  = @_;
+    my $token   = $self->param('token');
     my $PayerID = $self->param('PayerID');
 
-
-    my $pp = new Business::PayPal::API::ExpressCheckout(
+    my $pp = Business::PayPal::API::ExpressCheckout->new(
         Username  => $pp_username,
         Password  => $pp_password,
         Signature => $pp_signature,
         sandbox   => $sandbox
     );
 
-
     my %details = $pp->GetExpressCheckoutDetails($token);
 
-    print "------GetExpressCheckoutDetails---------\n";
-    print Data::Dumper->Dump( [ \%details ], [qw(details)] );
-    print "----------------------------------------\n";
+    warn "------GetExpressCheckoutDetails---------\n";
+    warn Data::Dumper->Dump( [ \%details ], [qw(details)] );
+    warn "----------------------------------------\n";
 
     # hat's geklappt?
     if ( $details{Ack} ne "Success" ) {
@@ -192,7 +266,6 @@ any '/return' => sub {
         );
     }
 
-
     #my $PayerID = $details{PayerID};
     print "PayerID: $PayerID\n";
 
@@ -202,7 +275,7 @@ any '/return' => sub {
         print $field, ": ", $details{$field}, "\n";
     }
 
-    my $OrderTotal = 55.22;
+    my $OrderTotal = $self->session->{ $details{Token} };
 
     my %payinfo = $pp->DoExpressCheckoutPayment(
         Token         => $token,
@@ -211,21 +284,21 @@ any '/return' => sub {
         OrderTotal    => $OrderTotal,
     );
 
-    print "----DoExpressCheckoutPayment---------------\n";
-    print Data::Dumper->Dump( [ \%payinfo ], [qw(payinfo)] );
-    print "-------------------------------------------\n";
+    warn "----DoExpressCheckoutPayment---------------\n";
+    my $dump = Data::Dumper->Dump( [ \%payinfo ], [qw(payinfo)] );
+    warn $dump;
+    warn "-------------------------------------------\n";
 
     # hat's geklappt?
     if ( $payinfo{'Ack'} ne "Success" ) {
         &error_exit(
-            "PayPal hat \""
+                "PayPal hat \""
               . $payinfo{'Ack'}
               . "\" gemeldet: ("
               . $payinfo{'Errors'}[0]->{'ErrorCode'} . ") "
               . $payinfo{'Errors'}[0]->{'LongMessage'}
               . " (CorrelationID: "
               . $payinfo{'CorrelationID'} . ")",
-            38
         );
     }
 
@@ -235,7 +308,28 @@ any '/return' => sub {
         print $field, ": ", $payinfo{$field}, "\n";
     }
 
-    $self->render(text => 'Payment is complete');
+    use YAML::XS;
+
+    my %slot_purchase = (
+        user_id             => $self->session->{user}->{id},
+        position_price      => $self->session->{positionprice},
+        transaction_id      => $payinfo{TransactionID},
+        transaction_details => $dump
+    );
+
+    my $rows = $self->da->do(
+        sql_interp( "INSERT INTO slot_purchases", \%slot_purchase ) );
+
+    my $xaction = sprintf '%d dollar slot purchase by %s',
+      $self->session->{positionprice},
+      $self->session->{user}->{username};
+
+    warn "XACTION:$xaction:";
+
+    $rows = $self->da->do(
+        sql_interp( "INSERT into transactions", { text => $xaction } ) );
+
+    $self->render( text => 'Payment is complete' );
 
 };
 
@@ -244,7 +338,6 @@ get '/logout' => sub {
     $self->logout;
     $self->redirect_to('/');
 };
-
 
 under sub {
     my ($self) = @_;
@@ -269,18 +362,28 @@ any '/root' => sub {
 };
 
 get '/order' => sub {
-  my($self)=@_;
-
+    my ($self) = @_;
 
 };
 
-get '/buy' => sub {
+any '/buy' => sub {
     my $self = shift;
+
+    my $ordered = $self->param('positionprice');
+
+    $self->session->{positionprice} = $ordered;
+
+    my $P = $self->paypal_fees($ordered);
+    $P->{ordered}   = $ordered;
+    $P->{admin_fee} = $admin_fee;
+
+    my $OrderTotal = sprintf '%.2f', sum( values %$P );
+
+    warn Dumper( 'PYPALDS', $P, 'TOTOL', $OrderTotal );
 
     use Business::PayPal::API::ExpressCheckout;
 
     use Data::Dumper;
-
 
     my $pp = new Business::PayPal::API::ExpressCheckout(
         Username  => $pp_username,
@@ -291,12 +394,13 @@ get '/buy' => sub {
 
     $Business::PayPal::API::Debug = 1;
 
-    my $OrderTotal = 55.22;
-
     my $ReturnURL        = 'http://localhost:3000/return';
     my $CancelURL        = 'http://localhost:3000/cancel';
     my $InvoiceID        = int rand 5000;
-    my $OrderDescription = '1 5.00 slot';
+    my $OrderDescription = sprintf
+'$%.2f total for a %d dollar slot, $%.2f admin fee, and $%.2f in paypal fees',
+      $OrderTotal, $P->{ordered}, $P->{admin_fee},
+      $P->{percent_amount} + $P->{thirty_cents};
 
     my %response = $pp->SetExpressCheckout(
         OrderTotal => $OrderTotal,
@@ -310,9 +414,11 @@ get '/buy' => sub {
         CancelURL        => $CancelURL,
     );
 
-    print "----SetExpressCheckout---------------\n";
-    print Data::Dumper->Dump( [ \%response ], [qw(response)] );
-    print "-------------------------------------\n";
+    warn "----SetExpressCheckout---------------\n";
+    warn Data::Dumper->Dump( [ \%response ], [qw(response)] );
+    warn "-------------------------------------\n";
+
+    $self->session->{ $response{Token} } = $OrderTotal;
 
     # hat's geklappt?
     if ( $response{'Ack'} ne "Success" ) {
@@ -332,13 +438,12 @@ get '/buy' => sub {
 
     print "Token: $token\n";
 
-
 #    $self->redirect_to("https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=$token");
-    $self->redirect_to("https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=$token");
+    $self->redirect_to(
+"https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=$token"
+    );
 
 };
-
-
 
 # Start the Mojolicious command system
 app->secret('clear')->start;

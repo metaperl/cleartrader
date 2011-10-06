@@ -17,6 +17,16 @@ body {
   min-width: 960px;
 }
 
+.align_right {
+ text-align: right;
+}
+
+.align_center {
+ text-align: center;
+}
+
+
+
 /* `Container
 ----------------------------------------------------------------------------------------------------*/
 
