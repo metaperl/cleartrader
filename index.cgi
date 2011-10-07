@@ -9,7 +9,6 @@ use Data::Dumper;
 use File::Basename 'dirname';
 use File::Spec;
 
-
 use lib join '/', File::Spec->splitdir( dirname(__FILE__) ), 'lib';
 
 use Mojolicious::Lite;
@@ -17,18 +16,26 @@ use Mojolicious::Lite;
 use List::Util qw(sum);
 
 use DBI;
+
 #DBI->trace(1);
 use SQL::Interp qw/:all/;
 
 app->defaults( layout => 'cam' );
+app->hook(
+    before_dispatch => sub {
+        my $self = shift;
+
+       # notice: url must be fully-qualified or absolute, ending in '/' matters.
+        $self->req->url->base(
+            Mojo::URL->new(q{http://www.elcaminoclaro.com/}) );
+    }
+);
 
 use Business::PayPal::API::ExpressCheckout;
 use Local::PayPal::Config;
 
 use Sys::Hostname;
-my $sandbox = hostname eq 'jcl4ever' ? 1 : 0 ;
-
-
+my $sandbox = hostname eq 'jcl4ever' ? 1 : 0;
 
 my $errors_occurred;
 my $debug = 4;
@@ -43,8 +50,6 @@ $pp_password = '1317787729';
 
 my $pp_signature = $paypal_config->signature;
 $pp_signature = 'ACUJJ0QSXgMyI2hh-LYPGuJxVGFBAbFNgamI72WhQVK5grpnVaShah5x';
-
-
 
 my %pp_args = (
     Username  => $pp_username,
@@ -340,7 +345,8 @@ any '/return' => sub {
     my %xact = (
         user_id => $self->session->{user}->{id},
         action  => 'buy',
-        amount  => sprintf '%d dollar slot', $self->session->{positionprice}
+        amount  => sprintf '%d dollar slot',
+        $self->session->{positionprice}
     );
 
     $rows = $self->da->do( sql_interp( "INSERT into transactions", \%xact ) );
@@ -418,7 +424,7 @@ WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts DESC"
         ]
     );
 
-    warn Dumper('resp' , \%resp);
+    warn Dumper( 'resp', \%resp );
 
     $rows = $self->da->do(
         sql_interp(
@@ -432,13 +438,13 @@ WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts DESC"
     my %xact = (
         user_id => $payee->{username},
         action  => 'payout',
-        amount  => sprintf '$%.2f slot', $amount
+        amount  => sprintf '$%.2f slot',
+        $amount
     );
 
     $rows = $self->da->do( sql_interp( "INSERT into transactions", \%xact ) );
 
     warn 1;
-
 
     $self->render(
         template => 'root',
@@ -485,7 +491,7 @@ any '/buy' => sub {
     my $CancelURL        = 'http://localhost:3000/cancel';
     my $InvoiceID        = int rand 5000;
     my $OrderDescription = sprintf
-'$%.2f total: a %d dollar slot + $%.2f admin fee + $%.2f in paypal fees',
+      '$%.2f total: a %d dollar slot + $%.2f admin fee + $%.2f in paypal fees',
       $OrderTotal, $P->{ordered}, $P->{admin_fee},
       $P->{percent_amount} + $P->{thirty_cents};
 
