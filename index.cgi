@@ -101,7 +101,7 @@ helper 'queues' => sub {
     );
 
     # returns an arrayref of hashrefs
-    warn Data::Dumper::Dumper( 'viewed', $viewed );
+    #warn Data::Dumper::Dumper( 'viewed', $viewed );
 
     $viewed;
 

@@ -7,7 +7,7 @@ sub dbh {
     my $C = Local::DBIx::DBH->linode;
     use DBI;
     my $dbh = DBI->connect( $C->for_dbi );
-    warn "DBH:$dbh.";
+    #warn "DBH:$dbh.";
     $dbh;
 }
 
