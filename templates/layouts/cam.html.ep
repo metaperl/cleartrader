@@ -82,7 +82,7 @@
          <% my $xacts = recent_transactions %>
 	 <UL>
          <% for my $xact (@$xacts) { %>
-	 <LI> <%= $xact->{text} %> at <%= $xact->{ts} %> </LI>
+	 <LI> <%= $xact->{ts} %> <%= $xact->{action}  %> -> <%= $xact->{username} %> ( <%= $xact->{amount} %> ) </LI>
          <% } %>
 	 </UL>
 

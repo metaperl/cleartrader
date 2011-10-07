@@ -1,3 +1,4 @@
 % layout 'cam';
 % stash title => 'Root of Compassion';
 
+<%= $msg %>

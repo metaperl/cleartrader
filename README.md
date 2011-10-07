@@ -37,6 +37,48 @@ Install the necessary CPAN modules
 
 ### Local modules
 
+#### Database Connectivity
+
+##### lib/Local/DB.pm
+
+The sub `dbh` needs to return a DBI database handle to your
+database. The way I do it is by creating an instance of DBIx::DBH via
+the method above and then creating the DBI dbh from there. But
+that is complicated. You can simply put your connection info in the
+`dbh` sub and be done. But for reference here is how I do it.
+
+The code is not in the repo because that would reveal database
+connection credentials.
+
+
+```perl
+
+package Local::DB;
+
+use Moose;
+
+sub dbh {
+    use Local::DBIx::DBH;
+    my $C = Local::DBIx::DBH->fluxflex;
+    use DBI;
+    my $dbh = DBI->connect( $C->for_dbi );
+    warn "DBH:$dbh.";
+    $dbh;
+}
+
+sub da {
+    my ($self) = @_;
+    use Local::DBIx::Array;
+    my $dbx = Local::DBIx::Array->new;
+    $dbx->dbh( $self->dbh );
+    $dbx;
+}
+
+1;
+
+```
+
+
 #### lib/Local/DBIx/DBH.pm
 
 write a method which returns and instance of DBIx::DBH with connection
@@ -79,38 +121,6 @@ sub fluxflex {
 
 ```
 
-#### lib/Local/DB.pm
-
-The sub `dbh` needs to return a DBI database handle to your
-database. The way I do it is by creating an instance of DBIx::DBH via
-the method above and then creating the DBI dbh from there:
-
-```perl
-
-package Local::DB;
-
-use Moose;
-
-sub dbh {
-    use Local::DBIx::DBH;
-    my $C = Local::DBIx::DBH->fluxflex;
-    use DBI;
-    my $dbh = DBI->connect( $C->for_dbi );
-    warn "DBH:$dbh.";
-    $dbh;
-}
-
-sub da {
-    my ($self) = @_;
-    use Local::DBIx::Array;
-    my $dbx = Local::DBIx::Array->new;
-    $dbx->dbh( $self->dbh );
-    $dbx;
-}
-
-1;
-
-```
 
 
 

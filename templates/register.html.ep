@@ -25,9 +25,9 @@
 
 
     <p>
-      <label for="email">Email Address</label>&nbsp;
+      <label for="email">PayPal Email</label>&nbsp;
       <input id="email" name="email" size="75"  class="required email"
-	     minlength="2" placeholder="Please enter your email address for personal communication." /> 
+	     minlength="2" placeholder="Please enter your PayPal email address." /> 
     </p>
 
 

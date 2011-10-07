@@ -27,7 +27,7 @@ a <a href="http://en.wikipedia.org/wiki/Pyramid_scheme">Pyramid
   <LI>the "pharoah" of the pyramid makes far more money than his
     recruits.</LI>
   <LI>participants are promised significant returns. As you can see
-    from our terms, we make no promises on the return for your investment.</LI>
+    from our <a href="/terms">terms</a>, we make no promises on the return for your investment.</LI>
 </OL>
 
 
@@ -40,4 +40,8 @@ progressing and how close you are to earning your desired profit. That
 being said, mistakes, cataclysms and attrition are all possible,
 although certainly not desired or planned.
 
+<h4>request header error</h4>
+Clear your cookies and
+cache <a href="http://support.mozilla.com/en-US/questions/871331#answer-241764">as
+  described here</a>
 

@@ -3,6 +3,8 @@
 * BUYER
 ** buyer@gmail.com , buyer123  ... 
 buyer_1317784740_per@gmail.com
+* b_1318004856_per@gmail.com , buyer123
+
 * API CREDENTIALS
 Credential	API Signature
 API Username	thequietcenter_api1.gmail.com

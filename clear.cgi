@@ -8,6 +8,7 @@ use autodie qw/:all/;
 use Data::Dumper;
 use File::Basename 'dirname';
 use File::Spec;
+use YAML::XS;
 
 use lib join '/', File::Spec->splitdir( dirname(__FILE__) ), 'lib';
 
@@ -16,13 +17,17 @@ use Mojolicious::Lite;
 use List::Util qw(sum);
 
 use DBI;
-DBI->trace(1);
+#DBI->trace(1);
 use SQL::Interp qw/:all/;
 
 app->defaults( layout => 'cam' );
 
 use Business::PayPal::API::ExpressCheckout;
 use Local::PayPal::Config;
+
+my $sandbox = 1;
+$sandbox = 0;
+
 
 my $errors_occurred;
 my $debug = 4;
@@ -38,7 +43,14 @@ $pp_password = '1317787729';
 my $pp_signature = $paypal_config->signature;
 $pp_signature = 'ACUJJ0QSXgMyI2hh-LYPGuJxVGFBAbFNgamI72WhQVK5grpnVaShah5x';
 
-my $sandbox = 1;
+
+
+my %pp_args = (
+    Username  => $pp_username,
+    Password  => $pp_password,
+    Signature => $pp_signature,
+    sandbox   => $sandbox
+);
 
 my $admin_fee = 1.00;
 
@@ -95,11 +107,11 @@ helper 'recent_transactions' => sub {
 
     my $viewed = $self->da->sqlarrayhash( "
     SELECT
-      *
+      action, amount, username, t.ts
     FROM
-      transactions
+      transactions t INNER JOIN users u ON (id=user_id)
     ORDER BY
-      ts DESC
+      t.ts DESC
     LIMIT 10
     "
     );
@@ -308,8 +320,6 @@ any '/return' => sub {
         print $field, ": ", $payinfo{$field}, "\n";
     }
 
-    use YAML::XS;
-
     my %slot_purchase = (
         user_id             => $self->session->{user}->{id},
         position_price      => $self->session->{positionprice},
@@ -326,8 +336,15 @@ any '/return' => sub {
 
     warn "XACTION:$xaction:";
 
-    $rows = $self->da->do(
-        sql_interp( "INSERT into transactions", { text => $xaction } ) );
+    my %xact = (
+        user_id => $self->session->{user}->{id},
+        action  => 'buy',
+        amount  => sprintf '%d dollar slot', $self->session->{positionprice}
+    );
+
+    $rows = $self->da->do( sql_interp( "INSERT into transactions", \%xact ) );
+
+    $self->pay( $self->session->{positionprice} );
 
     $self->render( text => 'Payment is complete' );
 
@@ -352,12 +369,81 @@ under sub {
 any '/root' => sub {
     my $self = shift;
 
-    my $msg;
+    $self->render(
+        template => 'root',
+        msg      => '',
+        user     => $self->session->{user}
+    );
 
-    use Cwd;
-    my $c = getcwd;
+};
 
-    $self->render( template => 'root', user => $self->session->{user} );
+helper pay => sub {
+    my ( $self, $amount ) = @_;
+
+    warn 1;
+
+    my $rows = $self->da->sqlarrayhash(
+        sql_interp(
+            "SELECT position_price, transaction_id, email, username
+FROM slot_purchases sp INNER JOIN users ON (user_id=id)
+WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts DESC"
+        )
+    );
+
+    return unless @$rows > 2;
+
+    warn 1;
+
+    my $pay_amount = 2 * $amount;
+
+    my $payee = $rows->[0];
+
+    warn Dumper( 'payee', $payee );
+
+    use Business::PayPal::API::MassPay;
+    my $pp = Business::PayPal::API::MassPay->new(%pp_args);
+
+    warn 1;
+
+    my %resp = $pp->MassPay(
+        EmailSubject => "This is the subject; nice eh?",
+        MassPayItems => [
+            {
+                ReceiverEmail => $payee->{email},
+                Amount        => $pay_amount,
+                UniqueID      => "123456",
+                Note => "Enjoy the money. Don't spend it all in one place."
+            }
+        ]
+    );
+
+    warn Dumper('resp' , \%resp);
+
+    $rows = $self->da->do(
+        sql_interp(
+            "UPDATE slot_purchases SET status = ", \$resp{Ack},
+            "WHERE transaction_id=",               \$payee->{transaction_id}
+        )
+    );
+
+    warn 1;
+
+    my %xact = (
+        user_id => $payee->{username},
+        action  => 'payout',
+        amount  => sprintf '$%.2f slot', $amount
+    );
+
+    $rows = $self->da->do( sql_interp( "INSERT into transactions", \%xact ) );
+
+    warn 1;
+
+
+    $self->render(
+        template => 'root',
+        msg      => Dumper( \%resp ),
+        user     => $self->session->{user}
+    );
 
 };
 
@@ -398,7 +484,7 @@ any '/buy' => sub {
     my $CancelURL        = 'http://localhost:3000/cancel';
     my $InvoiceID        = int rand 5000;
     my $OrderDescription = sprintf
-'$%.2f total for a %d dollar slot, $%.2f admin fee, and $%.2f in paypal fees',
+'$%.2f total: a %d dollar slot + $%.2f admin fee + $%.2f in paypal fees',
       $OrderTotal, $P->{ordered}, $P->{admin_fee},
       $P->{percent_amount} + $P->{thirty_cents};
 
