@@ -35,6 +35,17 @@ Contact me for the latest database schema
 
 Install the necessary CPAN modules
 
+- Moose
+- Mojolicious::Plugin::Authentication
+- Mojolicious
+- DBI
+- DBIx::Array
+- SQL::Interp
+- Business::PayPal::API
+- IPC::System::Simple
+- autodie
+
+
 ### Local modules
 
 #### Database Connectivity

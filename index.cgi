@@ -25,8 +25,9 @@ app->defaults( layout => 'cam' );
 use Business::PayPal::API::ExpressCheckout;
 use Local::PayPal::Config;
 
-my $sandbox = 1;
-$sandbox = 0;
+use Sys::Hostname;
+my $sandbox = hostname eq 'jcl4ever' ? 1 : 0 ;
+
 
 
 my $errors_occurred;
