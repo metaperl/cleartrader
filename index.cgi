@@ -21,41 +21,50 @@ use DBI;
 use SQL::Interp qw/:all/;
 
 app->defaults( layout => 'cam' );
-app->hook(
-    before_dispatch => sub {
-        my $self = shift;
 
-       # notice: url must be fully-qualified or absolute, ending in '/' matters.
-        $self->req->url->base(
-            Mojo::URL->new(q{http://www.elcaminoclaro.com/}) );
-    }
-);
+# app->hook(
+#     before_dispatch => sub {
+#         my $self = shift;
+
+#        # notice: url must be fully-qualified or absolute, ending in '/' matters.
+#         $self->req->url->base(
+#             Mojo::URL->new(q{http://www.elcaminoclaro.com/}) );
+#     }
+# );
 
 use Business::PayPal::API::ExpressCheckout;
 use Local::PayPal::Config;
 
 use Sys::Hostname;
-my $sandbox = hostname eq 'jcl4ever' ? 1 : 0;
+my $mode = hostname =~ /linode/ ? 'production' : 'dev';
+my $sandbox = $mode eq 'dev';
+
+warn "mode:$mode:sandbox:$sandbox";
 
 my $errors_occurred;
 my $debug = 4;
 
 my $paypal_config = Local::PayPal::Config->new;
 
-my $pp_username = $paypal_config->username;
-$pp_username = 'cleart_1317787692_biz_api1.gmail.com';
-
-my $pp_password = $paypal_config->password;
-$pp_password = '1317787729';
-
-my $pp_signature = $paypal_config->signature;
-$pp_signature = 'ACUJJ0QSXgMyI2hh-LYPGuJxVGFBAbFNgamI72WhQVK5grpnVaShah5x';
+my $pp_username  = $paypal_config->{username};
+my $pp_password  = $paypal_config->{password};
+my $pp_signature = $paypal_config->{signature};
 
 my %pp_args = (
     Username  => $pp_username,
     Password  => $pp_password,
     Signature => $pp_signature,
     sandbox   => $sandbox
+);
+
+my %checkout = (
+    dev        => "https://www.sandbox.paypal.com",
+    production => "https://www.paypal.com"
+);
+
+my %base_url = (
+    dev        => "http://localhost:3000",
+    production => "http://www.elcaminoclaro.com"
 );
 
 my $admin_fee = 1.00;
@@ -250,6 +259,11 @@ post '/register_eval' => sub {
 
     $self->render( template => 'thankyou' );
 
+};
+
+any '/cancel' => sub {
+    my ($self) = @_;
+    $self->redirect_to('/root');
 };
 
 any '/return' => sub {
@@ -466,13 +480,9 @@ any '/buy' => sub {
 
     $self->session->{positionprice} = $ordered;
 
-    my $P = $self->paypal_fees($ordered);
-    $P->{ordered}   = $ordered;
-    $P->{admin_fee} = $admin_fee;
+    my $OrderTotal = sprintf '%.2f', $ordered + $admin_fee;
 
-    my $OrderTotal = sprintf '%.2f', sum( values %$P );
-
-    warn Dumper( 'PYPALDS', $P, 'TOTOL', $OrderTotal );
+    #warn Dumper( 'PYPALDS', $P, 'TOTOL', $OrderTotal );
 
     use Business::PayPal::API::ExpressCheckout;
 
@@ -487,13 +497,16 @@ any '/buy' => sub {
 
     $Business::PayPal::API::Debug = 1;
 
-    my $ReturnURL        = 'http://localhost:3000/return';
-    my $CancelURL        = 'http://localhost:3000/cancel';
+    my $url = $base_url{$mode};
+
+    warn "URL:$url";
+
+    my $ReturnURL        = "$url/return";
+    my $CancelURL        = "$url/cancel";
     my $InvoiceID        = int rand 5000;
     my $OrderDescription = sprintf
-      '$%.2f total: a %d dollar slot + $%.2f admin fee + $%.2f in paypal fees',
-      $OrderTotal, $P->{ordered}, $P->{admin_fee},
-      $P->{percent_amount} + $P->{thirty_cents};
+      '$%.2f total: a %d dollar slot + $%.2f admin fee ',
+      $OrderTotal, $ordered, $admin_fee;
 
     my %response = $pp->SetExpressCheckout(
         OrderTotal => $OrderTotal,
@@ -532,9 +545,10 @@ any '/buy' => sub {
     print "Token: $token\n";
 
 #    $self->redirect_to("https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=$token");
-    $self->redirect_to(
-"https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=$token"
-    );
+    $url = $checkout{$mode};
+    $url = "$url/cgi-bin/webscr?cmd=_express-checkout&token=$token";
+    warn "url:$url";
+    $self->redirect_to($url);
 
 };
 
