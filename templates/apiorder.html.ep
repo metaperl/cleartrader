@@ -1,0 +1,14 @@
+<h3>Purchase a Slot</h3>
+
+<form method="post" action="/buy">
+
+  <select name="positionprice">
+      <% for my $q (@ { queues() } )  { %>
+      <%  my $a = $q->{amount}; my $fa = sprintf '$ %d.00', $a; %>
+        <option value="<%= $a %>"><%= $fa %></option>
+      <% } %>
+  </select>
+
+  <input type="submit" value="Submit">
+
+</form>

@@ -17,20 +17,20 @@
 
       <div class="grid_3">
 	<h1>
-	  <a href="/root">ElCaminoClaro.com</a>
+	  <a href="root">ElCaminoClaro.com</a>
 	</h1>
       </div>
 
       <div class="grid_5 align_center">
-	<h6><a href="/order">Buy</a> your slot. <a href="/terms">We double it</a>, with instant cashout.</h6>
+	<h6><a href="order">Buy</a> your slot. <a href="terms">We double it</a>, with instant cashout.</h6>
       </div>
 
       <div class="grid_4 align_right">
 	
 	<h5>
-	  <a href="/faq">FAQ</a> | 
+	  <a href="faq">FAQ</a> | 
 	  <a href="http://elcaminoclaro.userrules.com/forum">Forum</a> | 
-	  <a href="/chat">Chat</a> 
+	  <a href="chat">Chat</a> 
 	</h5>
 
       </div>
@@ -90,8 +90,8 @@
       <div class="grid_6 align_right">
 
 	<a href="https://github.com/metaperl/cleartrader">Source Code</a> |
-	<a href="/terms">Terms of Service</a> |
-	<a href="/logout">Logout</a> 
+	<a href="terms">Terms of Service</a> |
+	<a href="logout">Logout</a> 
       </div>      
 
 

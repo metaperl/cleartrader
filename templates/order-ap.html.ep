@@ -1,0 +1,18 @@
+<h3>Purchase a Slot</h3>
+
+<form method="post" action="/buy">
+
+  <input type="hidden" name="ap_merchant" value="metaperl@gmail.com"/>
+  <input type="hidden" name="ap_purchasetype" value="item"/>
+  <input type="hidden" name="ap_itemname" value="Cash Slot"/>
+
+  <select name="positionprice">
+      <% for my $q (@ { queues() } )  { %>
+      <%  my $a = $q->{amount}; my $fa = sprintf '$ %d.00', $a; %>
+        <option value="<%= $a %>"><%= $fa %></option>
+      <% } %>
+  </select>
+
+  <input type="submit" value="Submit">
+
+</form>
