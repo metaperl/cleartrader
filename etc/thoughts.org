@@ -1,0 +1,5 @@
+*
+** tight cycle
+** advertise as developer on mmg
+** alertpay processing
+** liberty reserve pay processing

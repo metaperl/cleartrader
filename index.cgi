@@ -16,26 +16,16 @@ use Mojolicious::Lite;
 use List::Util qw(sum);
 
 use DBI;
-
 #DBI->trace(1);
 use SQL::Interp qw/:all/;
 
-app->defaults( layout => 'cam' );
-
-# app->hook(
-#     before_dispatch => sub {
-#         my $self = shift;
-
-#        # notice: url must be fully-qualified or absolute, ending in '/' matters.
-#         $self->req->url->base(
-#             Mojo::URL->new(q{http://www.elcaminoclaro.com/}) );
-#     }
-# );
-
 use Business::PayPal::API::ExpressCheckout;
+use Sys::Hostname;
+
+use Local::DB;
 use Local::PayPal::Config;
 
-use Sys::Hostname;
+
 my $mode = hostname =~ /linode/ ? 'production' : 'dev';
 my $sandbox = $mode eq 'dev';
 
@@ -45,6 +35,19 @@ my $errors_occurred;
 my $debug = 4;
 
 my $paypal_config = Local::PayPal::Config->new($mode);
+
+# --- edit these
+
+my $q_width = 2;
+my $admin_fee = 1.00;
+helper pay_amount {
+  my($self, $amount)=@_;
+  
+  my $percentage_gain = 0.8 * $amount;
+  $amount + $percentage_gain;
+}
+
+# --- end edit
 
 #die Dumper($paypal_config);
 
@@ -77,7 +80,8 @@ my %base_url = (
 
 my $base_url = $base_url{$mode};
 
-my $admin_fee = 1.00;
+
+
 
 helper paypal_fees => sub {
     my ( $self, $amount ) = @_;
@@ -91,7 +95,7 @@ helper paypal_fees => sub {
 };
 
 helper da => sub {
-    use Local::DB;
+
 
     my $da = Local::DB->new->da;
 };
@@ -423,11 +427,12 @@ WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts ASC"
 
     warn Dumper( 'rows', $rows );
 
-    return unless @$rows > 2;
+    return unless @$rows > $q_width;
 
     warn 1;
 
-    my $pay_amount = 2 * $amount;
+    my $pay_amount = $self->pay_amount($amount);
+
 
     my $payee = $rows->[0];
 
@@ -597,6 +602,7 @@ any '/buy' => sub {
 };
 
 # Start the Mojolicious command system
+app->defaults( layout => 'cam' );
 app->secret('clear')->start;
 
 ############################################
