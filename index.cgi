@@ -40,12 +40,12 @@ my $paypal_config = Local::PayPal::Config->new($mode);
 
 my $q_width = 2;
 my $admin_fee = 1.00;
-helper pay_amount {
+helper pay_amount => sub {
   my($self, $amount)=@_;
   
   my $percentage_gain = 0.8 * $amount;
   $amount + $percentage_gain;
-}
+};
 
 # --- end edit
 
