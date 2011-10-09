@@ -44,8 +44,11 @@ warn "mode:$mode:sandbox:$sandbox";
 my $errors_occurred;
 my $debug = 4;
 
-my $paypal_config = Local::PayPal::Config->new;
+my $paypal_config = Local::PayPal::Config->new($mode);
 
+#die Dumper($paypal_config);
+
+my $pp_email     = $paypal_config->{email};
 my $pp_username  = $paypal_config->{username};
 my $pp_password  = $paypal_config->{password};
 my $pp_signature = $paypal_config->{signature};
@@ -57,6 +60,11 @@ my %pp_args = (
     sandbox   => $sandbox
 );
 
+my %pay_url = (
+    dev        => 'https://svcs.sandbox.paypal.com/AdaptivePayments/Pay',
+    production => 'https://svcs.paypal.com/AdaptivePayments/Pay',
+);
+
 my %checkout = (
     dev        => "https://www.sandbox.paypal.com",
     production => "https://www.paypal.com"
@@ -66,6 +74,8 @@ my %base_url = (
     dev        => "http://localhost:3000",
     production => "http://www.elcaminoclaro.com"
 );
+
+my $base_url = $base_url{$mode};
 
 my $admin_fee = 1.00;
 
@@ -405,11 +415,13 @@ helper pay => sub {
 
     my $rows = $self->da->sqlarrayhash(
         sql_interp(
-            "SELECT position_price, transaction_id, email, username
-FROM slot_purchases sp INNER JOIN users ON (user_id=id)
-WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts DESC"
+            "SELECT position_price, transaction_id, email, username, u.id
+FROM slot_purchases sp INNER JOIN users u ON (user_id=id)
+WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts ASC"
         )
     );
+
+    warn Dumper( 'rows', $rows );
 
     return unless @$rows > 2;
 
@@ -425,44 +437,67 @@ WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts DESC"
     my $pp = Business::PayPal::API::MassPay->new(%pp_args);
 
     warn 1;
-
-    my %resp = $pp->MassPay(
-        EmailSubject => "This is the subject; nice eh?",
-        MassPayItems => [
-            {
-                ReceiverEmail => $payee->{email},
-                Amount        => $pay_amount,
-                UniqueID      => "123456",
-                Note => "Enjoy the money. Don't spend it all in one place."
-            }
-        ]
+    my $url = $pay_url{$mode};
+    my $tx  = $self->ua->post_form(
+        $url, 'UTF-8',
+        {
+            'requestEnvelope.errorLanguage'   => 'en_US',
+            actionType                        => 'PAY',
+            senderEmail                       => $pp_email,
+            'receiverList.receiver(0).email'  => $payee->{email},
+            'receiverList.receiver(0).amount' => $pay_amount,
+            currencyCode                      => 'USD',
+            feesPayer                         => 'EACHRECEIVER',
+            memo                              => 'slot payout',
+            cancelUrl                         => "$base_url/cancel",
+            returnUrl                         => "$base_url/return",
+            ipnNotificationUrl                => "$base_url/ipn"
+        },
+        {
+            "X-PAYPAL-SECURITY-USERID"      => $pp_username,
+            "X-PAYPAL-SECURITY-PASSWORD"    => $pp_password,
+            "X-PAYPAL-SECURITY-SIGNATURE"   => $pp_signature,
+            "X-PAYPAL-REQUEST-DATA-FORMAT"  => 'NV',
+            "X-PAYPAL-RESPONSE-DATA-FORMAT" => "NV",
+            "X-PAYPAL-APPLICATION-ID"       => 'APP-80W284485P519543T'
+        }
     );
 
-    warn Dumper( 'resp', \%resp );
+    #    warn Dumper( 'resp',
+
+    my $params = Mojo::Parameters->new( $tx->res->body );
+
+    my $ack = $params->param('responseEnvelope.ack');
+    warn "ack:$ack";
+
+    my $status = $ack =~ /success/i ? 0 : $tx->res->body;
 
     $rows = $self->da->do(
         sql_interp(
-            "UPDATE slot_purchases SET status = ", \$resp{Ack},
+            "UPDATE slot_purchases SET status = ", \$status,
             "WHERE transaction_id=",               \$payee->{transaction_id}
         )
     );
 
-    warn 1;
+    unless ($status) {
 
-    my %xact = (
-        user_id => $payee->{username},
-        action  => 'payout',
-        amount  => sprintf '$%.2f slot',
-        $amount
-    );
+        warn 'payout into transactions';
 
-    $rows = $self->da->do( sql_interp( "INSERT into transactions", \%xact ) );
+        my %xact = (
+            user_id => $payee->{id},
+            action  => 'payout',
+            amount  => sprintf '$%.2f slot',
+            $amount
+        );
 
-    warn 1;
+        $rows =
+          $self->da->do( sql_interp( "INSERT into transactions", \%xact ) );
+
+    }
 
     $self->render(
         template => 'root',
-        msg      => Dumper( \%resp ),
+        msg      => Dumper( $tx->res->body ),
         user     => $self->session->{user}
     );
 
@@ -495,6 +530,14 @@ any '/buy' => sub {
         sandbox   => $sandbox
     );
 
+    warn "
+    my $pp = Business::PayPal::API::ExpressCheckout->new(
+        Username  => $pp_username,
+        Password  => $pp_password,
+        Signature => $pp_signature,
+        sandbox   => $sandbox
+    )";
+
     $Business::PayPal::API::Debug = 1;
 
     my $url = $base_url{$mode};
@@ -508,6 +551,7 @@ any '/buy' => sub {
       '$%.2f total: a %d dollar slot + $%.2f admin fee ',
       $OrderTotal, $ordered, $admin_fee;
 
+    warn Dumper( 'PP', $pp );
     my %response = $pp->SetExpressCheckout(
         OrderTotal => $OrderTotal,
         MaxAmount  => $OrderTotal,  # es fällt keine Steuer und kein Shipping an
