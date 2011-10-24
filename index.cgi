@@ -33,7 +33,6 @@ warn "mode:$mode:sandbox:$sandbox";
 my $errors_occurred;
 my $debug = 4;
 
-my $paypal_config = Local::PayPal::Config->new($mode);
 
 # --- edit these
 
@@ -48,29 +47,6 @@ helper pay_amount => sub {
 
 # --- end edit
 
-#die Dumper($paypal_config);
-
-my $pp_email     = $paypal_config->{email};
-my $pp_username  = $paypal_config->{username};
-my $pp_password  = $paypal_config->{password};
-my $pp_signature = $paypal_config->{signature};
-
-my %pp_args = (
-    Username  => $pp_username,
-    Password  => $pp_password,
-    Signature => $pp_signature,
-    sandbox   => $sandbox
-);
-
-my %pay_url = (
-    dev        => 'https://svcs.sandbox.paypal.com/AdaptivePayments/Pay',
-    production => 'https://svcs.paypal.com/AdaptivePayments/Pay',
-);
-
-my %checkout = (
-    dev        => "https://www.sandbox.paypal.com",
-    production => "https://www.paypal.com"
-);
 
 my %base_url = (
     dev        => "http://localhost:3000",
@@ -279,110 +255,6 @@ any '/cancel' => sub {
     $self->redirect_to('/root');
 };
 
-any '/return' => sub {
-    my ($self)  = @_;
-    my $token   = $self->param('token');
-    my $PayerID = $self->param('PayerID');
-
-    my $pp = Business::PayPal::API::ExpressCheckout->new(
-        Username  => $pp_username,
-        Password  => $pp_password,
-        Signature => $pp_signature,
-        sandbox   => $sandbox
-    );
-
-    my %details = $pp->GetExpressCheckoutDetails($token);
-
-    warn "------GetExpressCheckoutDetails---------\n";
-    warn Data::Dumper->Dump( [ \%details ], [qw(details)] );
-    warn "----------------------------------------\n";
-
-    # hat's geklappt?
-    if ( $details{Ack} ne "Success" ) {
-        &error_exit(
-            "PayPal hat \""
-              . $details{'Ack'}
-              . "\" gemeldet: ("
-              . $details{'Errors'}[0]->{'ErrorCode'} . ") "
-              . $details{'Errors'}[0]->{'LongMessage'}
-              . " (CorrelationID: "
-              . $details{'CorrelationID'} . ")",
-            28
-        );
-    }
-
-    #my $PayerID = $details{PayerID};
-    print "PayerID: $PayerID\n";
-
-    foreach my $field ( keys %details ) {
-        next if $field =~ /^PayerID|Token|Version|Build|Ack$/;
-
-        print $field, ": ", $details{$field}, "\n";
-    }
-
-    my $OrderTotal = $self->session->{ $details{Token} };
-
-    my %payinfo = $pp->DoExpressCheckoutPayment(
-        Token         => $token,
-        PaymentAction => 'Sale',
-        PayerID       => $PayerID,
-        OrderTotal    => $OrderTotal,
-    );
-
-    warn "----DoExpressCheckoutPayment---------------\n";
-    my $dump = Data::Dumper->Dump( [ \%payinfo ], [qw(payinfo)] );
-    warn $dump;
-    warn "-------------------------------------------\n";
-
-    # hat's geklappt?
-    if ( $payinfo{'Ack'} ne "Success" ) {
-        &error_exit(
-                "PayPal hat \""
-              . $payinfo{'Ack'}
-              . "\" gemeldet: ("
-              . $payinfo{'Errors'}[0]->{'ErrorCode'} . ") "
-              . $payinfo{'Errors'}[0]->{'LongMessage'}
-              . " (CorrelationID: "
-              . $payinfo{'CorrelationID'} . ")",
-        );
-    }
-
-    foreach my $field ( keys %payinfo ) {
-        next if $field =~ /^PayerID|Token|Version|Build|Ack$/;
-
-        print $field, ": ", $payinfo{$field}, "\n";
-    }
-
-    my %slot_purchase = (
-        user_id             => $self->session->{user}->{id},
-        position_price      => $self->session->{positionprice},
-        transaction_id      => $payinfo{TransactionID},
-        transaction_details => $dump
-    );
-
-    my $rows = $self->da->do(
-        sql_interp( "INSERT INTO slot_purchases", \%slot_purchase ) );
-
-    my $xaction = sprintf '%d dollar slot purchase by %s',
-      $self->session->{positionprice},
-      $self->session->{user}->{username};
-
-    warn "XACTION:$xaction:";
-
-    my %xact = (
-        user_id => $self->session->{user}->{id},
-        action  => 'buy',
-        amount  => sprintf '%d dollar slot',
-        $self->session->{positionprice}
-    );
-
-    $rows = $self->da->do( sql_interp( "INSERT into transactions", \%xact ) );
-
-    $self->pay( $self->session->{positionprice} );
-
-    $self->render( text => 'Payment is complete' );
-
-};
 
 get '/logout' => sub {
     my ($self) = @_;
@@ -437,52 +309,7 @@ WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts ASC"
 
     warn Dumper( 'payee', $payee );
 
-    use Business::PayPal::API::MassPay;
-    my $pp = Business::PayPal::API::MassPay->new(%pp_args);
-
-    warn 1;
-    my $url = $pay_url{$mode};
-    my $tx  = $self->ua->post_form(
-        $url, 'UTF-8',
-        {
-            'requestEnvelope.errorLanguage'   => 'en_US',
-            actionType                        => 'PAY',
-            senderEmail                       => $pp_email,
-            'receiverList.receiver(0).email'  => $payee->{email},
-            'receiverList.receiver(0).amount' => $pay_amount,
-            currencyCode                      => 'USD',
-            feesPayer                         => 'EACHRECEIVER',
-            memo                              => 'slot payout',
-            cancelUrl                         => "$base_url/cancel",
-            returnUrl                         => "$base_url/return",
-            ipnNotificationUrl                => "$base_url/ipn"
-        },
-        {
-            "X-PAYPAL-SECURITY-USERID"      => $pp_username,
-            "X-PAYPAL-SECURITY-PASSWORD"    => $pp_password,
-            "X-PAYPAL-SECURITY-SIGNATURE"   => $pp_signature,
-            "X-PAYPAL-REQUEST-DATA-FORMAT"  => 'NV',
-            "X-PAYPAL-RESPONSE-DATA-FORMAT" => "NV",
-            "X-PAYPAL-APPLICATION-ID"       => 'APP-80W284485P519543T'
-        }
-    );
-
-    #    warn Dumper( 'resp',
-
-    my $params = Mojo::Parameters->new( $tx->res->body );
-
-    my $ack = $params->param('responseEnvelope.ack');
-    warn "ack:$ack";
-
-    my $status = $ack =~ /success/i ? 0 : $tx->res->body;
-
-    $rows = $self->da->do(
-        sql_interp(
-            "UPDATE slot_purchases SET status = ", \$status,
-            "WHERE transaction_id=",               \$payee->{transaction_id}
-        )
-    );
-
+    my $status;
     unless ($status) {
 
         warn 'payout into transactions';
@@ -501,8 +328,7 @@ WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts ASC"
 
     $self->render(
         template => 'root',
-        msg      => Dumper( $tx->res->body ),
-        user     => $self->session->{user}
+
     );
 
 };
@@ -523,80 +349,6 @@ any '/buy' => sub {
 
     #warn Dumper( 'PYPALDS', $P, 'TOTOL', $OrderTotal );
 
-    use Business::PayPal::API::ExpressCheckout;
-
-    use Data::Dumper;
-
-    my $pp = new Business::PayPal::API::ExpressCheckout(
-        Username  => $pp_username,
-        Password  => $pp_password,
-        Signature => $pp_signature,
-        sandbox   => $sandbox
-    );
-
-    warn "
-    my $pp = Business::PayPal::API::ExpressCheckout->new(
-        Username  => $pp_username,
-        Password  => $pp_password,
-        Signature => $pp_signature,
-        sandbox   => $sandbox
-    )";
-
-    $Business::PayPal::API::Debug = 1;
-
-    my $url = $base_url{$mode};
-
-    warn "URL:$url";
-
-    my $ReturnURL        = "$url/return";
-    my $CancelURL        = "$url/cancel";
-    my $InvoiceID        = int rand 5000;
-    my $OrderDescription = sprintf
-      '$%.2f total: a %d dollar slot + $%.2f admin fee ',
-      $OrderTotal, $ordered, $admin_fee;
-
-    warn Dumper( 'PP', $pp );
-    my %response = $pp->SetExpressCheckout(
-        OrderTotal => $OrderTotal,
-        MaxAmount  => $OrderTotal,  # es fällt keine Steuer und kein Shipping an
-        currencyID => 'USD',
-        InvoiceID  => $InvoiceID,
-        NoShipping => 1,
-
-        OrderDescription => $OrderDescription,
-        ReturnURL        => $ReturnURL,
-        CancelURL        => $CancelURL,
-    );
-
-    warn "----SetExpressCheckout---------------\n";
-    warn Data::Dumper->Dump( [ \%response ], [qw(response)] );
-    warn "-------------------------------------\n";
-
-    $self->session->{ $response{Token} } = $OrderTotal;
-
-    # hat's geklappt?
-    if ( $response{'Ack'} ne "Success" ) {
-        &error_exit(
-            "PayPal hat \""
-              . $response{'Ack'}
-              . "\" gemeldet: ("
-              . $response{'Errors'}[0]->{'ErrorCode'} . ") "
-              . $response{'Errors'}[0]->{'LongMessage'}
-              . " (CorrelationID: "
-              . $response{'CorrelationID'} . ")",
-            18
-        );
-    }
-
-    my $token = $response{'Token'};
-
-    print "Token: $token\n";
-
-#    $self->redirect_to("https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=$token");
-    $url = $checkout{$mode};
-    $url = "$url/cgi-bin/webscr?cmd=_express-checkout&token=$token";
-    warn "url:$url";
-    $self->redirect_to($url);
 
 };
 
