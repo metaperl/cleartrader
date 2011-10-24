@@ -19,10 +19,11 @@ use DBI;
 #DBI->trace(1);
 use SQL::Interp qw/:all/;
 
+use Business::PayPal::API::ExpressCheckout;
 use Sys::Hostname;
 
 use Local::DB;
-
+use Local::PayPal::Config;
 
 
 my $mode = hostname =~ /linode/ ? 'production' : 'dev';
