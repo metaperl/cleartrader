@@ -38,33 +38,14 @@
 
       <hr>
 
-      <div id="content">
+
 	<%= content %>
-      </div>
+
 
       <hr>
 
       <h2 class="grid_12">Payment Queues</h2>
       
-      <% for my $q (@ { queues() } ) { %>
-      
-
-      <div class="grid_2">
-	<h3>$<%= $q->{amount} %> </h3>
-    
-         <% my $actives = active_in_queue($q->{amount}); %>
-         <% if (scalar @$actives) { %>
-	<ol>
-           <% for my $active (@$actives) { %>
-
-	  <li><%= $active->{username} %></li>
-           <% } %>
-	</ol>
-        <% } %>
-
-      </div>
-
-     <% } %>
 
       <hr>
 
@@ -83,7 +64,7 @@
          <% my $xacts = recent_transactions %>
 	 <UL>
          <% for my $xact (@$xacts) { %>
-	 <LI> <%= $xact->{ts} %> <%= $xact->{action}  %> -> <%= $xact->{username} %> ( <%= $xact->{amount} %> ) </LI>
+	 <LI> <%= $xact->{ts} %> <%= $xact->{action}  %> -> <%= $xact->{username} %> ( <%= $xact->{value} %> ) </LI>
          <% } %>
 	 </UL>
 

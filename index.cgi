@@ -111,7 +111,7 @@ helper 'recent_transactions' => sub {
 
     my $viewed = $self->da->sqlarrayhash( "
     SELECT
-      action, amount, username, t.ts
+      action, value, username, t.ts
     FROM
       transactions t INNER JOIN users u ON (id=user_id)
     ORDER BY
