@@ -1,0 +1,4 @@
+* Get info on local wallet
+cd ~/init.d/solidcoin
+./solidcoind getinfo
+
