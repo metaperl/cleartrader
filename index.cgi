@@ -163,10 +163,10 @@ helper 'get_user_by_id' => sub {
 
 };
 
-# helper dumper => sub {
-#     my ( $self, @struct ) = @_;
-#     Dumper( \@struct );
-# };
+helper dumper => sub {
+    my ( $self, @struct ) = @_;
+    warn Dumper( @struct );
+};
 
 plugin 'Authentication' => {
     'session_key' => 'wickedapp',
@@ -181,6 +181,7 @@ plugin 'Authentication' => {
 
         if ( $password eq $C->{password} ) {
             $self->session->{user} = $C;
+	    $self->dumper(userdata => $self->session->{user});
             $email;
         }
         else {
@@ -280,6 +281,12 @@ any '/root' => sub {
         msg      => '',
         user     => $self->session->{user}
     );
+
+    $self->dumper(justbeforerender => $self->session->{user});
+    $self->render(
+        template => 'root', %{$self->session->{user}}
+    );
+
 
 };
 
