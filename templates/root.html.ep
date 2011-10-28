@@ -1,4 +1,4 @@
 % layout 'cam';
 % stash title => 'Root of Compassion';
 
-Your default payout Address is <%= $address %>
+Your default payout Address is <%= $user->{address} %>

@@ -58,17 +58,6 @@ my $base_url = $base_url{$mode};
 
 
 
-helper paypal_fees => sub {
-    my ( $self, $amount ) = @_;
-
-    my $percent      = $amount * .029;
-    my $thirty_cents = 0.30;
-    {
-        percent_amount => $percent,
-        thirty_cents   => $thirty_cents
-    };
-};
-
 helper da => sub {
 
 
@@ -80,7 +69,7 @@ helper customer => sub {
 
     #die "E:$email:";
 
-    $self->da->sqlrowhash( sql_interp "SELECT * FROM users WHERE email = ",
+    $self->da->sqlrowhash( sql_interp "SELECT * FROM users u INNER JOIN user_statuses us ON (u.status_id=us.id) WHERE email = ",
         \$email );
 };
 
@@ -276,17 +265,12 @@ under sub {
 any '/root' => sub {
     my $self = shift;
 
+    $self->dumper(justbeforerender => $self->session->{user});
     $self->render(
         template => 'root',
         msg      => '',
         user     => $self->session->{user}
     );
-
-    $self->dumper(justbeforerender => $self->session->{user});
-    $self->render(
-        template => 'root', %{$self->session->{user}}
-    );
-
 
 };
 
