@@ -1,15 +1,20 @@
 % stash title => 'About';
 
 <div class="grid-12">
+<a name="what">
 <h4>What is this all about?</h4>
+</a>
 
-<P>It's all about <a href="about">making money</a></P>
+<P>It's all about putting the golden rule into action for you, so
+you can <a href="about">make money</a></P>
 
 </div>
 
 <div class="grid-12">
 
+<a name="how">
 <h4>How does it work?</h4>
+</a>
 
 <P>
 Well, it's simple. You buy a slot in the payment queue. And when 2
