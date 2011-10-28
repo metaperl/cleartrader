@@ -1,18 +1,31 @@
 % stash title => 'About';
 
+<div class="grid-12">
 <h4>What is this all about?</h4>
 
+<P>It's all about <a href="about">making money</a></P>
 
-It's all about <a href="about">making money</a>
+</div>
+
+<div class="grid-12">
 
 <h4>How does it work?</h4>
 
+<P>
 Well, it's simple. You buy a slot in the payment queue. And when 2
 people buy a slot in the same queue after you, you get approximately
 twice your money, minus processing/admin fees.
+</P>
 
+</div>
+
+<div class="grid-12">
+
+<a name="work">
 <h4>Dont you have to work to make money?</h4>
+</a>
 
+<P>
 There are 4 ways to make money:
 <OL>
   <LI>work for someone (employee)</LI>
@@ -20,11 +33,22 @@ There are 4 ways to make money:
   <LI>work for yourself (consultant)</LI>
   <LI>use money to make more money (investment)</LI>
 </OL>
+</P>
 
-95% of the world earns 5% of the wealth via methods 1-3. 5% of the world controls 95% of the wealth via
+<P>
+95% of the world earns 5% of the wealth via methods 1-3. These method
+does not leverage time, money or groups of people - if you arent
+working, you arent getting paid. It is
+inefficient. By contrast, 5% of the world controls 95% of the wealth via
 method 4. It is our job to give you the freedom you deserve via method 4.
+</P>
+</div>
 
+<div class="grid-12">
+
+<a name="pyramid">
 <h4>Is this a pyramid scheme?</h4>
+</a>
 
 At ElCaminoClaro, everyone has an equal opportunity to earn. In
 a <a href="http://en.wikipedia.org/wiki/Pyramid_scheme">Pyramid 
@@ -35,8 +59,13 @@ a <a href="http://en.wikipedia.org/wiki/Pyramid_scheme">Pyramid
   <LI>participants are promised significant returns. As you can see
     from our <a href="/terms">terms</a>, we make no promises on the return for your investment.</LI>
 </OL>
+</div>
 
+<div class="grid-12">
+
+<a name="ponzi">
 <h4 name="ponzi">Is this a ponzi scheme?</h4>
+</a>
 
 Well, let's <a href=http://en.wikipedia.org/wiki/Ponzi_scheme>see</a>:
 <OL>
@@ -71,17 +100,33 @@ model is absolutely transparent. Unlike Charles Ponzi and more
 recently Bernie Madoff, I am in no way trumping up the claims of
 return or hiding the source of income.
 
+</OL>
+</div>
 
+<div class="grid-12">
+
+<a name="risk">
 <h4>Can I lose Money?</h4>
+</a>
 
+<P>
 All investments have their risk. However, this site is named "El
 Camino Claro" for a reason. You can see clearly how your investment is
 progressing and how close you are to earning your desired profit. That
 being said, mistakes, cataclysms and attrition are all possible,
 although certainly not desired or planned.
+</P>
+</div>
 
-<h4>request header error</h4>
+
+<div class="grid-12">
+<h4>I'm getting a "request header error"</h4>
+
+<P>
 Clear your cookies and
 cache <a href="http://support.mozilla.com/en-US/questions/871331#answer-241764">as
   described here</a>
+</P>
+
+</div>
 
