@@ -24,76 +24,62 @@
 
     <div class="grids">
 
-      <div id="header">
+      <div class="grid-3">
+	<h3>
+	  <a href="root">elcaminoclaro.com</a>
+	</h3>
 
-	<div class="grid-3">
-	  <h3>
-	    <a href="root">elcaminoclaro.com</a>
-	  </h3>
-
-	</div>
-
-	<div class="grid-3">
-	  give and ye shall receive <a href="faq#fold">2-fold</a>
-	</div>
-
-	<div class="grid-6 align_right">
-	  
-	  <a href="about">About</a> | 
-	  <a href="faq">FAQ</a> | 
-	  <a href="starting">Getting Started</a> | 
-	  <a href="http://elcaminoclaro.userrules.com/forum">Forum</a> | 
-	  <a href="chat">Chat</a> 
-
-	</div>
       </div>
 
+      <div class="grid-3">
+	give and ye shall receive <a href="faq#fold">2-fold</a>
+      </div>
 
-      <div id="main">
-
-	<div class="grid-12">
-
-	  <%= content %>
-
-	</div>
-
-
-
-	<div class="grid-12">
-	  <h2>Payment Queues</h2>
-	</div>
+      <div class="grid-6 align_right">
 	
-
-
-
-
-
-	<div class="grid-6">
-	  <h3>Recent Transactions</h3>
-
-          <% my $xacts = recent_transactions %>
-	  <UL>
-            <% for my $xact (@$xacts) { %>
-	    <LI> <%= $xact->{ts} %> <%= $xact->{action}  %> -> <%= $xact->{username} %> ( <%= $xact->{value} %> ) </LI>
-            <% } %>
-	  </UL>
-
-	</div>
-	<div class="grid-6 align_right">
-
-	  <a href="https://github.com/metaperl/cleartrader">Source Code</a> |
-	  <a href="terms">Terms of Service</a> |
-	  <a href="logout">Logout</a> 
-	</div>      
-
-	<div class="grid-12">
-	  <div class="footer">
-	    You can have anything in the world that you want, simply by helping enough other people to get what they want -- Zig Ziglar.
-	  </div>
-	</div>
+	<a href="settings">Settings</a> | 
+	<a href="about">About</a> | 
+	<a href="faq">FAQ</a> | 
+	<a href="starting">Getting Started</a> | 
+	<a href="http://elcaminoclaro.userrules.com/forum">Forum</a> | 
+	<a href="chat">Chat</a> 
 
       </div>
+
+      <div class="grid-12">
+	<%= content %>
+      </div>
+
+      <div class="grid-12">
+	<h2>Payment Queues</h2>
+      </div>
+      
+      <div class="grid-6">
+	<h3>Recent Transactions</h3>
+
+        <% my $xacts = recent_transactions %>
+	<UL>
+          <% for my $xact (@$xacts) { %>
+	  <LI> <%= $xact->{ts} %> <%= $xact->{action}  %> -> <%= $xact->{username} %> ( <%= $xact->{value} %> ) </LI>
+          <% } %>
+	</UL>
+
+      </div>
+
+      <div class="grid-6 align_right">
+	<a href="https://github.com/metaperl/cleartrader">Source Code</a> |
+	<a href="terms">Terms of Service</a> |
+	<a href="logout">Logout</a> 
+      </div>      
+
+      <div class="grid-12">
+	<div class="footer">
+	  You can have anything in the world that you want, simply by helping enough other people to get what they want -- Zig Ziglar.
+	</div>
+      </div>
+
     </div>
+
   </body>
 </html>
 </html>

@@ -274,6 +274,16 @@ any '/root' => sub {
 
 };
 
+get '/settings' => sub {
+  my($self)=@_;
+
+    $self->render(
+        template => 'root',
+        user     => $self->session->{user}
+    );
+
+};
+
 helper pay => sub {
     my ( $self, $amount ) = @_;
 
