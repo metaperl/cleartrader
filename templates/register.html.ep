@@ -18,8 +18,8 @@
 
 
   <label class="grid_2 alpha" for="address">address</label>
-  <input class="grid_6 omega required" id="address" name="address" size="75"  
-	 minlength="12" placeholder="Please enter your SolidCoin receiving address." /> 
+  <input class="grid_6 omega" id="address" name="address" size="75"  
+	 minlength="12" placeholder="You can enter your SolidCoin receiving address later" /> 
 
   <div class="clear"> </div>
 

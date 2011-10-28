@@ -4,77 +4,92 @@
   <head>
     <title><%= title %></title>
 
-    <link rel="stylesheet" type="text/css" media="all" href="css/reset.css" />
-    <link rel="stylesheet" type="text/css" media="all" href="css/text.css" />
-    <link rel="stylesheet" type="text/css" media="all" href="css/960.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="core/css/inuit.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="coredemo/css/igloos.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="coredemo/css/style.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="css/my.css" />
+
+    <!-- humans.txt -->
+    <link rel=author href=coredemo/humans.txt>
+    
+
+    <!-- Favicons and the like (avoid using transparent .png) -->
+    <link rel="shortcut icon" href=coredemo/icon.png>
+    <link rel=apple-touch-icon-precomposed href=coredemo/icon.png />
 
     %= include 'libs' 
   </head>
 
-  <body>
+  <body class="wrapper">
 
-    <div class="container_12">
+    <div class="grids">
 
-      <div class="grid_3">
-	<h1>
-	  <a href="root">ElCaminoClaro.com</a>
-	</h1>
+      <div class="grid-3">
+	<h3>
+	  <a href="root">elcaminoclaro.com</a>
+	</h3>
       </div>
 
-      <div class="grid_5 align_center">
-	<h6><a href="order">Buy</a> your slot. <a href="terms">We double it</a>, with instant cashout.</h6>
+      <div class="grid-3 align_center">
+	The perfect passive income producer
       </div>
 
-      <div class="grid_4 align_right">
+      <div class="grid-6 align_right">
 	
-	<h5>
+	<h6>
 	  <a href="about">About</a> | 
 	  <a href="faq">FAQ</a> | 
+	  <a href="starting">Getting Started</a> | 
 	  <a href="http://elcaminoclaro.userrules.com/forum">Forum</a> | 
 	  <a href="chat">Chat</a> 
-	</h5>
+	</h6>
 
       </div>
 
       <hr>
 
+      <div class="grid-12">
 
 	<%= content %>
 
+      </div>
 
       <hr>
 
-      <h2 class="grid_12">Payment Queues</h2>
+      <div class="grid-12">
+	<h2>Payment Queues</h2>
+      </div>
       
 
       <hr>
 
 
-      <div class="grid_12">
-	<footnote>
-	  <i>You can have anything in the world that you want, simply by helping enough other people to get what they want -- Zig Ziglar.</i>
-	</footnote>
-      </div>
 
-      <hr>
-
-      <div class="grid_6">
+      <div class="grid-6">
 	<h3>Recent Transactions</h3>
 
-         <% my $xacts = recent_transactions %>
-	 <UL>
-         <% for my $xact (@$xacts) { %>
-	 <LI> <%= $xact->{ts} %> <%= $xact->{action}  %> -> <%= $xact->{username} %> ( <%= $xact->{value} %> ) </LI>
-         <% } %>
-	 </UL>
+        <% my $xacts = recent_transactions %>
+	<UL>
+          <% for my $xact (@$xacts) { %>
+	  <LI> <%= $xact->{ts} %> <%= $xact->{action}  %> -> <%= $xact->{username} %> ( <%= $xact->{value} %> ) </LI>
+          <% } %>
+	</UL>
 
       </div>
-      <div class="grid_6 align_right">
+      <div class="grid-6 align_right">
 
 	<a href="https://github.com/metaperl/cleartrader">Source Code</a> |
 	<a href="terms">Terms of Service</a> |
 	<a href="logout">Logout</a> 
       </div>      
+
+      <div class="grid-12">
+	<div class="footer">
+	  You can have anything in the world that you want, simply by helping enough other people to get what they want -- Zig Ziglar.
+	</div>
+      </div>
+
+
 
 
 
