@@ -1,0 +1,76 @@
+% stash title => 'Settings';
+
+
+<form id="form" method="post" action="update_eval">
+
+
+  <div class="grid-4">
+    <label>username</label>
+  </div>
+  <div class="grid-8">
+    <%= $user->{username} %>
+  </div>
+
+  <div class="grid-4">
+    <label>referral URL</label>
+  </div>
+  <div class="grid-8">
+    <a href="<%= url_for->path("inviter/$user->{username}")->to_abs %>">
+      <%= url_for->path("inviter/$user->{username}")->to_abs %>  
+    </a>
+  </div>
+
+
+  <div class="grid-4">
+    <label for="email">email</label>
+  </div>
+  <div class="grid-8">
+    <input class="required email valid" id="email" name="email" size="75" 
+	   minlength="2" value="<%= $user->{email} %>" />
+  </div>
+
+  <div class="grid-4">
+    <label for="address">address</label>
+  </div>
+  <div class="grid-8">
+    <input id="address" name="address" size="75"  
+	   minlength="12" value="<%= $user->{address} %>" /> 
+  </div>
+
+
+  <div class="grid-4">
+    <label  for="password">Password</label>
+  </div>
+  <div class="grid-8">
+    <input class="" id="password" name="password" size="75" type="password" minlength="4"
+	   placeholder="Enter a password ONLY if you want to change your password"
+	   />
+  </div>
+
+  <div class="grid-4">
+    <label for="password_again">Password (again)</label>&nbsp;
+  </div>
+  <div class="grid-8">
+    <input class="" id="password_again"  name="password_again" size="75"  type="password" 
+	   equalto="#password" minlength="4"
+	   placeholder="Please enter password again IF you entered a new password"
+	   />
+  </div>
+
+
+  <div class="grid-12">
+    <input class="" id="register" class="submit" type="submit" value="Update"/>
+    You are agreeing to our <a href="terms">Terms and Conditions</a> by pressing the Update button
+  </div>
+
+
+</form>
+
+
+
+
+
+
+
+<%= include 'validation' %>
+</div>
