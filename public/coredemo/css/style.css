@@ -133,9 +133,11 @@ pre mark{
 \*------------------------------------*/
 ::selection		{ background-color:#4a8ec2; color:#fff; }
 ::-moz-selection{ background-color:#4a8ec2; color:#fff; }
-hr{
-	padding:0;
-	border:none;
-	height:1px;
-	background-color:#ccc;
+hr {
+    background: none repeat scroll 0 0 #CCCCCC;
+    border: medium none;
+    clear: both;
+    height: 1px;
+    padding: 0;
+    width: 100%;
 }

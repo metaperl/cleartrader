@@ -277,8 +277,10 @@ any '/root' => sub {
 get '/settings' => sub {
   my($self)=@_;
 
+#  my $url = $self->tx->req->url
+
     $self->render(
-        template => 'root',
+        template => 'settings',
         user     => $self->session->{user}
     );
 
