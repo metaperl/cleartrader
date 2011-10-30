@@ -1,6 +1,20 @@
 % layout 'cam';
 % stash title => 'Root of Compassion';
 
-Welcome  <%= $user->{username} %>, you are in <%= $user->{status} %> 
-(  <%= $user->{status_description} %> ).
-Your default payout address is <%= $user->{address} %>
+<legend>Welcome  <%= $user->{username} %> </legend>
+
+You are <%= $user->{status_description} %>.
+
+<% if ($user->{delta}) { %>
+
+You should
+
+<a href="<%= $user->{delta_url} %>"> 
+  <%= $user->{delta} %>
+</a>
+
+to align with The Universal Law of Abundance.
+
+<% } %>
+
+

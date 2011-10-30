@@ -43,12 +43,23 @@
 	<a href="starting">Getting Started</a> | 
 	<a href="http://elcaminoclaro.userrules.com/forum">Forum</a> | 
 	<a href="chat">Chat</a>  |
-	<a href="logout">Logout</a> 
+	<a href="logout">Logout</a>  (       <%= $self->req->url %> )
       </div>
+
+      <% if (length($self->req->url) > 2) { %>
+
+      <div class="grid-12 boxy">
+	<fieldset>
+	<%= content %>
+	</fieldset>
+      <% } else { %>
 
       <div class="grid-12">
 	<%= content %>
       </div>
+
+	<% } %>
+
 
       <div class="grid-12">
 	<h2>Payment Queues</h2>
