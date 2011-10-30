@@ -17,7 +17,10 @@
   <div class="clear"> </div>
 
 
-  <label class="grid_2 alpha" for="address">address</label>
+  <label class="grid_2 alpha" for="address">
+    <a href="http://www.solidcoin.info">solidcoin</a> receiving
+address
+</label>
   <input class="grid_6 omega" id="address" name="address" size="75"  
 	 minlength="12" placeholder="You can enter your SolidCoin receiving address later" /> 
 

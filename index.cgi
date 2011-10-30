@@ -16,14 +16,13 @@ use Mojolicious::Lite;
 use List::Util qw(sum);
 
 use DBI;
+
 #DBI->trace(1);
 use SQL::Interp qw/:all/;
 
 use Sys::Hostname;
 
 use Local::DB;
-
-
 
 my $mode = hostname =~ /linode/ ? 'production' : 'dev';
 my $sandbox = $mode eq 'dev';
@@ -33,20 +32,18 @@ warn "mode:$mode:sandbox:$sandbox";
 my $errors_occurred;
 my $debug = 4;
 
-
 # --- edit these
 
-my $q_width = 2;
+my $q_width   = 2;
 my $admin_fee = 1.00;
 helper pay_amount => sub {
-  my($self, $amount)=@_;
-  
-  my $percentage_gain = 0.8 * $amount;
-  $amount + $percentage_gain;
+    my ( $self, $amount ) = @_;
+
+    my $percentage_gain = 0.8 * $amount;
+    $amount + $percentage_gain;
 };
 
 # --- end edit
-
 
 my %base_url = (
     dev        => "http://localhost:3000",
@@ -55,11 +52,7 @@ my %base_url = (
 
 my $base_url = $base_url{$mode};
 
-
-
-
 helper da => sub {
-
 
     my $da = Local::DB->new->da;
 };
@@ -67,10 +60,13 @@ helper da => sub {
 helper customer => sub {
     my ( $self, $email ) = @_;
 
-    #die "E:$email:";
+    warn "E:$email:";
 
-    $self->da->sqlrowhash( sql_interp "SELECT * FROM users u INNER JOIN user_statuses us ON (u.status_id=us.id) WHERE email = ",
-        \$email );
+    $self->da->sqlrowhash(
+        sql_interp
+"SELECT * FROM users u INNER JOIN user_statuses us ON (u.status_id=us.id) WHERE email = ",
+        \$email
+    );
 };
 
 helper 'queues' => sub {
@@ -154,8 +150,10 @@ helper 'get_user_by_id' => sub {
 
 helper dumper => sub {
     my ( $self, @struct ) = @_;
-    warn Dumper( @struct );
+    warn Dumper(@struct);
 };
+
+plugin 'Bcrypt';
 
 plugin 'Authentication' => {
     'session_key' => 'wickedapp',
@@ -164,13 +162,20 @@ plugin 'Authentication' => {
         $self->customer($email);
     },
     'validate_user' => sub {
-        my ( $self, $email, $password, $extradata ) = @_;
+        my ( $self, $email, $entered_pass, $extradata ) = @_;
         my $C = $self->customer($email);
+
+        $self->dumper( C => $C );
+
         return undef unless scalar keys %$C;
 
-        if ( $password eq $C->{password} ) {
+        my $crypted_pass = $C->{password};
+
+        warn "if ( $self->bcrypt_validate( $entered_pass, $crypted_pass ) ) {";
+
+        if ( $self->bcrypt_validate( $entered_pass, $crypted_pass ) ) {
             $self->session->{user} = $C;
-	    $self->dumper(userdata => $self->session->{user});
+            $self->dumper( userdata => $self->session->{user} );
             $email;
         }
         else {
@@ -205,6 +210,10 @@ get '/faq' => sub {
 
 };
 
+get '/starting' => sub {
+
+};
+
 get '/questions' => sub {
     my $self = shift;
 
@@ -232,7 +241,8 @@ post '/register_eval' => sub {
     my @param = $self->param;
     my %param = map { $_ => $self->param($_) } @param;
 
-    delete $param{password_again};
+    #delete $param{password_again};
+    $param{password} = $self->bcrypt( delete $param{password_again} );
 
     my $rows = $self->da->do( sql_interp( "INSERT INTO users", \%param ) );
 
@@ -245,7 +255,6 @@ any '/cancel' => sub {
     $self->redirect_to('/root');
 };
 
-
 get '/logout' => sub {
     my ($self) = @_;
     $self->logout;
@@ -254,6 +263,9 @@ get '/logout' => sub {
 
 under sub {
     my ($self) = @_;
+
+    warn 'authing user';
+
     return 1
       if (
         $self->authenticate( $self->param('email'), $self->param('password') )
@@ -265,7 +277,7 @@ under sub {
 any '/root' => sub {
     my $self = shift;
 
-    $self->dumper(justbeforerender => $self->session->{user});
+    $self->dumper( justbeforerender => $self->session->{user} );
     $self->render(
         template => 'root',
         msg      => '',
@@ -275,9 +287,9 @@ any '/root' => sub {
 };
 
 get '/settings' => sub {
-  my($self)=@_;
+    my ($self) = @_;
 
-#  my $url = $self->tx->req->url
+    #  my $url = $self->tx->req->url
 
     $self->render(
         template => 'settings',
@@ -306,7 +318,6 @@ WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts ASC"
     warn 1;
 
     my $pay_amount = $self->pay_amount($amount);
-
 
     my $payee = $rows->[0];
 
@@ -352,11 +363,9 @@ any '/buy' => sub {
 
     #warn Dumper( 'PYPALDS', $P, 'TOTOL', $OrderTotal );
 
-
 };
 
 # Start the Mojolicious command system
 app->defaults( layout => 'cam' );
 app->secret('clear')->start;
-
 

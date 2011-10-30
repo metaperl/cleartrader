@@ -6,20 +6,7 @@
  text-align: center;
 }
 
-
-
-            #header {
-
-    background: -moz-linear-gradient(center top , #434343, #191919) repeat scroll 0 0 transparent;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    margin-bottom: 20px;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 999;
-
-            }
-
-            #main {
- padding-top: 60px;
+.main {
+     border: 1px solid #CCCCCC;
+    padding: 1.5em;
             }
