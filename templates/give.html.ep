@@ -1,0 +1,25 @@
+% layout 'cam';
+% stash title => 'Give unconditionally';
+
+<blockquote>
+It is more blessed to give than to receive
+</blockquote>
+
+<P>And now is your big chance</P>
+
+<P>
+  Using your solidcoin client, send payment to this address:
+<pre>
+  <%= $address %>  (NOT CORRECT, MUST GENERATE NEW ADDRESS FOR EACH PAYMENT)
+</pre>
+Please indicate the intended amount of unconditional giving below:
+</P>
+<form class="grid_12" id="form" method="post" action="give_eval">
+  <% for my $q (@$payqs) { %>
+  <input type="radio" name="donation" value="<%= $q->{id} %>" /> 
+  <%= $q->{amount} %>
+  <br />
+  <% } %>
+
+  <input class="grid-8" id="register" class="submit" type="submit" value="Submit"/>
+</form>

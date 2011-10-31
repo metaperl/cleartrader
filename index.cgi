@@ -3,26 +3,25 @@
 use strict;
 use warnings;
 
-use autodie qw/:all/;
-
+# core modules
 use Data::Dumper;
 use File::Basename 'dirname';
 use File::Spec;
-
-use lib join '/', File::Spec->splitdir( dirname(__FILE__) ), 'lib';
-
-use Mojolicious::Lite;
-
 use List::Util qw(sum);
 
-use DBI;
-
-#DBI->trace(1);
+# cpan modules
+use Mojolicious::Lite;
+use autodie qw/:all/;
+use DBI;    #DBI->trace(1);
 use SQL::Interp qw/:all/;
-
 use Sys::Hostname;
 
+# local modules
+use lib join '/', File::Spec->splitdir( dirname(__FILE__) ), 'lib';
 use Local::DB;
+
+# config/setup
+my $wallet = 'sSzgkxNoWFq9bMMF7F6zUeCFe36yomhoRd';
 
 my $mode = hostname =~ /linode/ ? 'production' : 'dev';
 my $sandbox = $mode eq 'dev';
@@ -32,10 +31,9 @@ warn "mode:$mode:sandbox:$sandbox";
 my $errors_occurred;
 my $debug = 4;
 
-# --- edit these
-
 my $q_width   = 2;
 my $admin_fee = 1.00;
+
 helper pay_amount => sub {
     my ( $self, $amount ) = @_;
 
@@ -43,14 +41,14 @@ helper pay_amount => sub {
     $amount + $percentage_gain;
 };
 
-# --- end edit
-
 my %base_url = (
     dev        => "http://localhost:3000",
     production => "http://www.elcaminoclaro.com"
 );
 
 my $base_url = $base_url{$mode};
+
+# BEGIN mojolicious
 
 helper da => sub {
 
@@ -69,6 +67,16 @@ helper customer => sub {
     );
 };
 
+helper customer_via_username => sub {
+    my ( $self, $username ) = @_;
+
+    $self->da->sqlrowhash(
+        sql_interp
+"SELECT * FROM users u INNER JOIN user_statuses us ON (u.status_id=us.id) WHERE username = ",
+        \$username
+    );
+};
+
 helper 'queues' => sub {
 
     my ($self) = @_;
@@ -84,7 +92,7 @@ helper 'queues' => sub {
     );
 
     # returns an arrayref of hashrefs
-    #warn Data::Dumper::Dumper( 'viewed', $viewed );
+    warn Data::Dumper::Dumper( 'paymentqs', $viewed );
 
     $viewed;
 
@@ -196,6 +204,14 @@ get '/' => sub {
 
 };
 
+get '/dela/:inviter' => sub {
+    my ( $self, $inviter ) = @_;
+    my $I = $self->customer_via_username($inviter);
+
+    $self->redirect_to("/register?inviter=$I->{id}");
+
+};
+
 get '/register' => sub {
     my $self = shift;
 
@@ -298,6 +314,32 @@ get '/settings' => sub {
 
 };
 
+get '/give' => sub {
+    my ($self) = @_;
+
+    #  my $url = $self->tx->req->url
+
+    $self->render(
+        template => 'give',
+        user     => $self->session->{user},
+        address  => $wallet,
+		  payqs => $self->queues
+    );
+
+};
+
+get '/invite' => sub {
+    my ($self) = @_;
+
+    #  my $url = $self->tx->req->url
+
+    $self->render(
+        template => 'invite',
+        user     => $self->session->{user}
+    );
+
+};
+
 helper pay => sub {
     my ( $self, $amount ) = @_;
 
@@ -367,5 +409,5 @@ any '/buy' => sub {
 
 # Start the Mojolicious command system
 app->defaults( layout => 'cam' );
-app->secret('clear')->start;
+app->secret('laverne&sherley')->start;
 

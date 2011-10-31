@@ -1,0 +1,16 @@
+% layout 'cam';
+% stash title => 'Invite Others';
+
+To invite others to practice The Golden Rule, provide them with this
+link:
+
+<blockquote>
+  <a href="<%= url_for->path("dela/$user->{username}")->to_abs %>">
+      <%= url_for->path("dela/$user->{username}")->to_abs %>  
+  </a>
+</blockquote>
+
+<P>
+Baraka Bashad!
+</P>
+
