@@ -50,45 +50,41 @@
 
       <div class="grid-12 boxy">
 	<fieldset>
-	<%= content %>
+	  <%= content %>
 	</fieldset>
-      <% } else { %>
+	<% } else { %>
 
-      <div class="grid-12">
-	<%= content %>
-      </div>
+	<div class="grid-12">
+	  <%= content %>
+	</div>
 
 	<% } %>
 
+	<div class="grid-12">
+	  <h3>Recent Transactions</h3>
 
-      <div class="grid-12">
-	<h2>Payment Queues</h2>
-      </div>
-      
-      <div class="grid-12">
-	<h3>Recent Transactions</h3>
+          <% my $xacts = recent_transactions %>
+	  <UL>
+            <% for my $xact (@$xacts) { %>
+	    <LI> <%= $xact->{ts} %> <%= $xact->{action}  %> -> <%= $xact->{username} %> ( <%= $xact->{value} %> ) </LI>
+            <% } %>
+	  </UL>
 
-        <% my $xacts = recent_transactions %>
-	<UL>
-          <% for my $xact (@$xacts) { %>
-	  <LI> <%= $xact->{ts} %> <%= $xact->{action}  %> -> <%= $xact->{username} %> ( <%= $xact->{value} %> ) </LI>
-          <% } %>
-	</UL>
-
-      </div>
+	</div>
 
 
-<hr>
+	<hr>
 
-      <div class="grid-6">
+	<div class="grid-6">
 
 	  You can have anything in the world that you want, simply by helping enough other people to get what they want -- Zig Ziglar.
 
-      </div>
-      <div class="grid-6 align_right">
-	<a href="https://github.com/metaperl/cleartrader">Source Code</a> |
-	<a href="terms">Terms of Service</a>
-    </div>
+	</div>
+
+	<div class="grid-6 align_right">
+	  <a href="https://github.com/metaperl/cleartrader">Source Code</a> |
+	  <a href="terms">Terms of Service</a>
+	</div>
 
   </body>
 </html>

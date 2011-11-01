@@ -92,7 +92,7 @@ helper 'queues' => sub {
     );
 
     # returns an arrayref of hashrefs
-    warn Data::Dumper::Dumper( 'paymentqs', $viewed );
+    #warn Data::Dumper::Dumper( 'paymentqs', $viewed );
 
     $viewed;
 
@@ -323,7 +323,50 @@ get '/give' => sub {
         template => 'give',
         user     => $self->session->{user},
         address  => $wallet,
-		  payqs => $self->queues
+        payqs    => $self->queues
+    );
+
+};
+
+=for pod
+
+getinfo
+
+sc_getmining
+sc_setmining
+sc_getmining
+
+listaccounts
+getaddressesbyaccount
+
+getreceivedbyaddress
+
+getnewaddress
+
+listreceivedbyaddress
+
+
+
+
+=cut
+
+post '/give_eval' => sub {
+    my ($self) = @_;
+
+    #  my $url = $self->tx->req->url
+    my $donation_id = $self->param('donation');
+    my @q = @{ $self->queues };
+    $self->dumper(Q => \@q);
+    my ($href) = grep { $_->{id} == $donation_id } @q;
+    $self->dumper( DONATION_ID => $donation_id, HREF => $href );
+    my $payment = $href->{amount};
+
+    $self->render(
+        template => 'give_eval',
+        user     => $self->session->{user},
+        payment  => $payment,
+        address  => $wallet,
+
     );
 
 };

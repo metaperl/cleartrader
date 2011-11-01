@@ -1,0 +1,16 @@
+% layout 'cam';
+% stash title => 'Give unconditionally';
+
+
+<P>
+  Using your solidcoin client, send <%= $payment %> Solid Coins to this address:
+<pre>
+  <%= $address %> 
+</pre>
+
+</P>
+<P>
+Once this is completed, the next phase in practicing the Golden Rule
+will begin!
+</P>
+
