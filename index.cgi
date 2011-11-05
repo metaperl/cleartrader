@@ -48,11 +48,32 @@ my %base_url = (
 
 my $base_url = $base_url{$mode};
 
+my %solid = ( host => 'localhost', port => 8555, auth => 'user:pass' );
+
+my $json = {
+    jsonrpc => '1.0',
+    id      => 'curltest',
+    method  => 'getnewaddress'
+};
+
 # BEGIN mojolicious
 
 helper da => sub {
 
     my $da = Local::DB->new->da;
+};
+
+helper auto_inviter => sub {
+    my ($self) = @_;
+
+    $self->da->sqlrowhash(
+        'SELECT 
+   u1.id,u1.username, COUNT(u2.sponsor_id) AS refcount FROM users u1 LEFT JOIN users u2 ON (u1.id=u2.sponsor_id)
+WHERE u1.id >= 4
+GROUP BY u1.id,u1.username
+ORDER BY refcount ASC, u1.id ASC
+LIMIT 1'
+    );
 };
 
 helper customer => sub {
@@ -212,13 +233,6 @@ get '/dela/:inviter' => sub {
 
 };
 
-get '/register' => sub {
-    my $self = shift;
-
-    $self->render( template => 'register' );
-
-};
-
 get '/faq' => sub {
     my $self = shift;
 
@@ -251,6 +265,51 @@ get '/terms' => sub {
 
 };
 
+get '/register' => sub {
+    my $self = shift;
+
+    my ( $type, $inviter, $inviter_id ) = do {
+        if ( $self->param('inviter') ) {
+            my $username = $self->param('inviter');
+            my $id       = $self->customer_via_username($username)->{id};
+            ( direct => $username, $id );
+        }
+        else {
+	  my $i = $self->auto_inviter;
+            ( automatic => $i->{username}, $i->{id} );
+        }
+    };
+
+    $self->render(
+        template    => 'register',
+        inviter     => $inviter,
+        invite_type => $type,
+        sponsor_id  => $inviter_id
+    );
+};
+
+sub address_to_site {
+    use Mojo::JSON;
+    my $J = Mojo::JSON->new;
+
+    use Mojo::UserAgent;
+    my $ua = Mojo::UserAgent->new;
+
+    $json->{method} = 'getnewaddress';
+
+    $json = $J->encode($json);
+
+    my $tx =
+      $ua->post( "http://$solid{auth}" . '@'
+          . "$solid{host}:$solid{port}" => { Connection => 'close' } => $json );
+
+    my $hash = $J->decode( $tx->res->body );
+
+    die Dumper($hash) if $hash->{error};
+
+    $hash->{result};
+}
+
 post '/register_eval' => sub {
     my $self = shift;
 
@@ -259,6 +318,15 @@ post '/register_eval' => sub {
 
     #delete $param{password_again};
     $param{password} = $self->bcrypt( delete $param{password_again} );
+
+    $param{address_to_site} = address_to_site();
+
+    # my $c = $self->customer_via_username( delete $param{invited_by} );
+    # $param{sponsor_id} = $c->{id};
+
+    delete $param{$_} for qw(invite_type inviter);
+
+    $self->dumper( 'register_eval_param' => \%param );
 
     my $rows = $self->da->do( sql_interp( "INSERT INTO users", \%param ) );
 
@@ -336,8 +404,8 @@ sc_getmining
 sc_setmining
 sc_getmining
 
-listaccounts
-getaddressesbyaccount
+listaccounts - list accounts
+getaddressesbyaccount <account> - list addresses in an account
 
 getreceivedbyaddress
 
@@ -355,8 +423,8 @@ post '/give_eval' => sub {
 
     #  my $url = $self->tx->req->url
     my $donation_id = $self->param('donation');
-    my @q = @{ $self->queues };
-    $self->dumper(Q => \@q);
+    my @q           = @{ $self->queues };
+    $self->dumper( Q => \@q );
     my ($href) = grep { $_->{id} == $donation_id } @q;
     $self->dumper( DONATION_ID => $donation_id, HREF => $href );
     my $payment = $href->{amount};

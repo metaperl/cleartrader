@@ -1,31 +1,17 @@
-Cleartrader is a free open-source program offering a 2x1 forced matrix
-program. It was inspired by a [2 x 1 Cycle system I ran
-into](http://www.2x1cycle.in/faq.php). 
+Cleartrader is a free open-source program for cash gifting.
+This code is running live at [my website el camino claro](http://www.elcaminoclaro.com). 
+The payout model is very similar to The Peoples Program.
+However the default pay levels here are 3:
+
+* 70%
+* 20%
+* 10%
+
+whereas The Peoples Program operates on an 80-20 split.
+I like the extra referral wiggle that 3 levels gives you.
 
 
 # Installation
-
-## PayPal
-
-Create `lib/Local/PayPal/Config.pm` and put your seller API data in it:
-
-```perl
-package Local::PayPal::Config;
-
-use Moose;
-
-has 'username' => ( is => 'ro', default => 'japh_api1.gmail.com' );
-has 'password' => ( is => 'ro', default => 'PHAPHAPHJPAH' );
-has 'signature' => (
-    is      => 'ro',
-    default => 'AJPAHIF-7gH5jPewBwlIkmD6heasdfasdf23MsBuP32UhD0dxRGk'
-);
-
-1;
-
-
-
-```
 
 ## Database
 
@@ -35,15 +21,9 @@ Contact me for the latest database schema
 
 Install the necessary CPAN modules
 
-- Moose
-- Mojolicious::Plugin::Authentication
-- Mojolicious
-- DBI
-- DBIx::Array
-- SQL::Interp
-- Business::PayPal::API
-- IPC::System::Simple
-- autodie
+ Moose Mojolicious::Plugin::Authentication Mojolicious
+ DBI DBIx::Array SQL::Interp
+ IPC::System::Simple  autodie
 
 
 ### Local modules
