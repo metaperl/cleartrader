@@ -303,9 +303,9 @@ get '/register' => sub {
 };
 
 helper 'address_to_site' => sub {
-    my ( $self, $sponsor_id ) = @_;
+    my ( $self, $_username, $_id ) = @_;
 
-    my $S = $self->customer_via_id($sponsor_id);
+    my $username = $_username || $self->customer_via_id($_id)->{username};
 
     use Mojo::JSON;
     my $J = Mojo::JSON->new;
@@ -314,7 +314,9 @@ helper 'address_to_site' => sub {
     my $ua = Mojo::UserAgent->new;
 
     $json->{method} = 'getnewaddress';
-    $json->{params} = [ $S->{username} ];
+    $json->{params} = [$username];
+
+    $self->dumper( JSON => $json );
 
     $json = $J->encode($json);
 
@@ -335,21 +337,15 @@ post '/register_eval' => sub {
     my @param = $self->param;
     my %param = map { $_ => $self->param($_) } @param;
 
-    #delete $param{password_again};
     $param{password} = $self->bcrypt( delete $param{password_again} );
 
-    # my $c = $self->customer_via_username( delete $param{invited_by} );
-    # $param{sponsor_id} = $c->{id};
-
     delete $param{$_} for qw(invite_type inviter);
+
+    $param{address_to_site} = $self->address_to_site( $param{username} );
 
     $self->dumper( 'register_eval_param' => \%param );
 
     my $rows = $self->da->do( sql_interp( "INSERT INTO users", \%param ) );
-
-    my $new_user = $self->customer_via_username( $param{username} );
-
-    #my $rows = $self->da->do( sql_interp( "INSERT INTO users", \%param ) );
 
     $self->render( template => 'thankyou' );
 
@@ -452,17 +448,28 @@ post '/give_eval' => sub {
     $self->dumper( DONATION_ID => $donation_id, HREF => $href );
     my $payment = $href->{amount};
 
-    my $address_to_sponsor = $self->address_to_site( $U->{sponsor_id} );
+    my $address_to_sponsor = $self->address_to_site( undef, $U->{sponsor_id} );
 
-    $self->dumper( USERSESSION => $U);
+    $self->dumper( USERSESSION => $U );
 
-    my %I = (
+    my %P = (
         pledger_id => $U->{id},
         sponsor_id => $U->{sponsor_id},
         address    => $address_to_sponsor
     );
 
-    my $rows = $self->da->do( sql_interp( "INSERT into user_pledges", \%I ) );
+    my $rows = $self->da->do( sql_interp( "INSERT into user_pledges", \%P ) );
+
+    #
+
+    my %T = (
+        user_id => $U->{id},
+        action  => 'pledge',
+        value   => $payment,
+        target  => $address_to_sponsor
+    );
+
+    my $rows = $self->da->do( sql_interp( "INSERT into transactions", \%T ) );
 
     $self->render(
         template => 'give_eval',
