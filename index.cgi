@@ -66,14 +66,18 @@ helper da => sub {
 helper auto_inviter => sub {
     my ($self) = @_;
 
-    $self->da->sqlrowhash(
-        'SELECT 
-   u1.id,u1.username, COUNT(u2.sponsor_id) AS refcount FROM users u1 LEFT JOIN users u2 ON (u1.id=u2.sponsor_id)
-WHERE u1.id >= 4
-GROUP BY u1.id,u1.username
-ORDER BY refcount ASC, u1.id ASC
+    my $row = $self->da->sqlrowhash( '
+SELECT u1.id, u1.username, COUNT(u2.sponsor_id) as refcount
+FROM users u1
+LEFT JOIN users u2 ON ( u1.id = u2.sponsor_id )
+WHERE u1.id >=4 AND u1.status_id >= 2
+GROUP BY
+   u1.id,u1.username
+ORDER BY
+   refcount ASC, u1.id ASC
 LIMIT 1'
     );
+    $row;
 };
 
 helper customer => sub {
@@ -83,7 +87,7 @@ helper customer => sub {
 
     $self->da->sqlrowhash(
         sql_interp
-"SELECT * FROM users u INNER JOIN user_statuses us ON (u.status_id=us.id) WHERE email = ",
+"SELECT u.*,us.status,us.status_description,us.delta,us.delta_url FROM users u INNER JOIN user_statuses us ON (u.status_id=us.id) WHERE email = ",
         \$email
     );
 };
@@ -95,6 +99,16 @@ helper customer_via_username => sub {
         sql_interp
 "SELECT * FROM users u INNER JOIN user_statuses us ON (u.status_id=us.id) WHERE username = ",
         \$username
+    );
+};
+
+helper customer_via_id => sub {
+    my ( $self, $id ) = @_;
+
+    $self->da->sqlrowhash(
+        sql_interp
+"SELECT u.*,us.status,us.status_description,us.delta,us.delta_url FROM users u INNER JOIN user_statuses us ON (u.status_id=us.id) WHERE u.id = ",
+        \$id
     );
 };
 
@@ -127,7 +141,7 @@ helper 'recent_transactions' => sub {
     SELECT
       action, value, username, t.ts
     FROM
-      transactions t INNER JOIN users u ON (id=user_id)
+      transactions t INNER JOIN users u ON (u.id=user_id)
     ORDER BY
       t.ts DESC
     LIMIT 10
@@ -275,7 +289,7 @@ get '/register' => sub {
             ( direct => $username, $id );
         }
         else {
-	  my $i = $self->auto_inviter;
+            my $i = $self->auto_inviter;
             ( automatic => $i->{username}, $i->{id} );
         }
     };
@@ -288,7 +302,11 @@ get '/register' => sub {
     );
 };
 
-sub address_to_site {
+helper 'address_to_site' => sub {
+    my ( $self, $sponsor_id ) = @_;
+
+    my $S = $self->customer_via_id($sponsor_id);
+
     use Mojo::JSON;
     my $J = Mojo::JSON->new;
 
@@ -296,6 +314,7 @@ sub address_to_site {
     my $ua = Mojo::UserAgent->new;
 
     $json->{method} = 'getnewaddress';
+    $json->{params} = [ $S->{username} ];
 
     $json = $J->encode($json);
 
@@ -308,7 +327,7 @@ sub address_to_site {
     die Dumper($hash) if $hash->{error};
 
     $hash->{result};
-}
+};
 
 post '/register_eval' => sub {
     my $self = shift;
@@ -319,8 +338,6 @@ post '/register_eval' => sub {
     #delete $param{password_again};
     $param{password} = $self->bcrypt( delete $param{password_again} );
 
-    $param{address_to_site} = address_to_site();
-
     # my $c = $self->customer_via_username( delete $param{invited_by} );
     # $param{sponsor_id} = $c->{id};
 
@@ -329,6 +346,10 @@ post '/register_eval' => sub {
     $self->dumper( 'register_eval_param' => \%param );
 
     my $rows = $self->da->do( sql_interp( "INSERT INTO users", \%param ) );
+
+    my $new_user = $self->customer_via_username( $param{username} );
+
+    #my $rows = $self->da->do( sql_interp( "INSERT INTO users", \%param ) );
 
     $self->render( template => 'thankyou' );
 
@@ -421,6 +442,8 @@ listreceivedbyaddress
 post '/give_eval' => sub {
     my ($self) = @_;
 
+    my $U = $self->session->{user};
+
     #  my $url = $self->tx->req->url
     my $donation_id = $self->param('donation');
     my @q           = @{ $self->queues };
@@ -429,12 +452,23 @@ post '/give_eval' => sub {
     $self->dumper( DONATION_ID => $donation_id, HREF => $href );
     my $payment = $href->{amount};
 
+    my $address_to_sponsor = $self->address_to_site( $U->{sponsor_id} );
+
+    $self->dumper( USERSESSION => $U);
+
+    my %I = (
+        pledger_id => $U->{id},
+        sponsor_id => $U->{sponsor_id},
+        address    => $address_to_sponsor
+    );
+
+    my $rows = $self->da->do( sql_interp( "INSERT into user_pledges", \%I ) );
+
     $self->render(
         template => 'give_eval',
         user     => $self->session->{user},
         payment  => $payment,
-        address  => $wallet,
-
+        address  => $address_to_sponsor
     );
 
 };
