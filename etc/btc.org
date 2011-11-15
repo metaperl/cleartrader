@@ -1,0 +1,20 @@
+*
+** start btc daemon
+bitcoind -daemon
+** wait for blockchain to download
+** bitcoind help
+** 
+
+* mining
+** linode
+
+cgminer -o http://mining.eligius.st:8337 --cpu-threads 2 --user 16yUMJPExi4rakCo7o1XRkawjQSF7PopiX --pass x
+ufasoft-miner -a 5 -t 2 -o http://mining.eligius.st:8337 -u 16yUMJPExi4rakCo7o1XRkawjQSF7PopiX -p x
+
+*** unfinished mining with linux wallet
+
+1MY6WBttQNwYSsEzJ7WnytZTM6DpgdTCia
+
+** windows
+
+cd \Programs && ufasoft-miner -a 5 -t 1 -o http://mining.eligius.st:8337 -u 16yUMJPExi4rakCo7o1XRkawjQSF7PopiX -p x

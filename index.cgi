@@ -23,6 +23,7 @@ use Local::DB;
 # config/setup
 my $wallet = 'sSzgkxNoWFq9bMMF7F6zUeCFe36yomhoRd';
 
+
 my $mode = hostname =~ /linode/ ? 'production' : 'dev';
 my $sandbox = $mode eq 'dev';
 
@@ -48,7 +49,7 @@ my %base_url = (
 
 my $base_url = $base_url{$mode};
 
-my %solid = ( host => 'localhost', port => 8555, auth => 'user:pass' );
+my %solid = ( host => 'localhost', port => 8332, auth => 'metaperl:metapass' );
 
 my $json = {
     jsonrpc => '1.0',
@@ -294,6 +295,8 @@ get '/register' => sub {
         }
     };
 
+    chomp($type);
+
     $self->render(
         template    => 'register',
         inviter     => $inviter,
@@ -413,28 +416,6 @@ get '/give' => sub {
 
 };
 
-=for pod
-
-getinfo
-
-sc_getmining
-sc_setmining
-sc_getmining
-
-listaccounts - list accounts
-getaddressesbyaccount <account> - list addresses in an account
-
-getreceivedbyaddress
-
-getnewaddress
-
-listreceivedbyaddress
-
-
-
-
-=cut
-
 post '/give_eval' => sub {
     my ($self) = @_;
 
@@ -534,10 +515,7 @@ WHERE STATUS IS NULL AND position_price =", \$amount, "ORDER BY sp.ts ASC"
 
     }
 
-    $self->render(
-        template => 'root',
-
-    );
+    $self->render(        template => 'root'    );
 
 };
 

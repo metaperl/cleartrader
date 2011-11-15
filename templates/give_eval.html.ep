@@ -3,7 +3,7 @@
 
 
 <P>
-  Using your solidcoin client, send <%= $payment %> Solid Coins to this address:
+  Using your bitcoin client, send at least <%= $payment %> Bitcoins to this address:
 <pre>
   <%= $address %> 
 </pre>

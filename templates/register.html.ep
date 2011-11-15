@@ -4,59 +4,57 @@
 
 
   <label class="grid-2" for="username">username</label>
-  <input class="grid-6 required valid" id="username" name="username" size="75"  "
-										 minlength="2" placeholder="" /> 
-
-													     <div class="clear"> </div>
+  <input class="grid-6 required valid" id="username" name="username" size="75" minlength="2" placeholder="" /> 
+  <div class="clear"> </div>
 
 
-													     <label class="grid-2" for="email">email</label>
-													     <input class="grid-6 required email valid" id="email" name="email" size="75" 
-														    minlength="2" /> 
+  <label class="grid-2" for="email">email</label>
+  <input class="grid-6 required email valid" id="email" name="email" size="75" 
+	 minlength="2" /> 
 
-													     <div class="clear"> </div>
-
-
-													     <label class="grid-2" for="address">
-													       <a href="http://www.solidcoin.info">solidcoin</a> address
-													     </label>
-													     <input class="grid-6" id="address" name="address" size="75"  
-														    minlength="12" placeholder="You can enter your SolidCoin receiving address later" /> 
-
-													     <div class="clear"> </div>
+  <div class="clear"> </div>
 
 
-													     <label class="grid-2" for="password">Password</label>
+  <label class="grid-2" for="address">
+    <a href="http://www.bitcoin.org">bitcoin</a> address
+  </label>
+  <input class="grid-6" id="address" name="address" size="75"  
+	 minlength="12" placeholder="You can enter your Bitcoin receiving address later" /> 
 
-													     <input class="grid-6 required" id="password" name="password" size="75" type="password" minlength="4"
-														    />
-
-													     <div class="clear"> </div>
-
-
-													     <label class="grid-2" for="password_again">Password (again)</label>&nbsp;
-													     <input class="grid-6 required" id="password_again"  name="password_again" size="75"  type="password" 
-														    equalto="#password" minlength="4"
-														    placeholder="Please enter the same password as above for verification"
-														    />
-
-													     <div class="clear"> </div>
-													     <label class="grid-2" for="inviter">Invited by</label>&nbsp;
-													     <div class="grid-4">
-													       <input id="inviter" name="inviter"
-														      readonly="readonly" value="<%= $inviter %>" />
-													       ( <%= $invite_type %> )
-													     </div>
+  <div class="clear"> </div>
 
 
-													     <div class="clear"> </div>
+  <label class="grid-2" for="password">Password</label>
 
-<input type="hidden" 
-       name="sponsor_id" value="<%= $sponsor_id %>" />
+  <input class="grid-6 required" id="password" name="password" size="75" type="password" minlength="4"
+	 />
 
-													     <input class="grid-8" id="register" class="submit" type="submit" value="Register"/>
+  <div class="clear"> </div>
 
-													     <div class="clear"></div>
+
+  <label class="grid-2" for="password_again">Password (again)</label>&nbsp;
+  <input class="grid-6 required" id="password_again"  name="password_again" size="75"  type="password" 
+	 equalto="#password" minlength="4"
+	 placeholder="Please enter the same password as above for verification"
+	 />
+
+  <div class="clear"> </div>
+  <label class="grid-2" for="inviter">Invited by</label>&nbsp;
+  <div class="grid-4">
+    <input id="inviter" name="inviter"
+	   readonly="readonly" value="<%= $inviter %>" />
+    ( <%= $invite_type %> )
+  </div>
+
+
+  <div class="clear"> </div>
+
+  <input type="hidden" 
+	 name="sponsor_id" value="<%= $sponsor_id %>" />
+
+  <input class="grid-8" id="register" class="submit" type="submit" value="Register"/>
+
+  <div class="clear"></div>
 
 
 </form>

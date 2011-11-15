@@ -1,0 +1,10 @@
+* transactions
+How currently listed
+* received_pledges
+** record_received_pledge
+
+*** update user_pledges with timestamp
+*** record transaction in transactions table
+*** upgrade user status 
+*** distribute pledge to upline
+
